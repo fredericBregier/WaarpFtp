@@ -1,17 +1,16 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -21,7 +20,6 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.traffic.ChannelTrafficShapingHandler;
-
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferMode;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferStructure;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferSubType;
@@ -30,9 +28,9 @@ import org.waarp.ftp.core.config.FtpConfiguration;
 
 /**
  * Pipeline Factory for Data Network.
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public class FtpDataInitializer extends ChannelInitializer<SocketChannel> {
     /**
@@ -88,7 +86,7 @@ public class FtpDataInitializer extends ChannelInitializer<SocketChannel> {
 
     /**
      * Constructor which Initializes some data
-     * 
+     *
      * @param dataBusinessHandler
      * @param configuration
      * @param active
@@ -103,14 +101,14 @@ public class FtpDataInitializer extends ChannelInitializer<SocketChannel> {
 
     /**
      * Create the pipeline with Handler, ObjectDecoder, ObjectEncoder.
-     * 
+     *
      */
     @Override
     public void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
         // Add default codec but they will change during the channelConnected
         pipeline.addFirst(CODEC_MODE, new FtpDataModeCodec(TransferMode.STREAM,
-                TransferStructure.FILE));
+                                                           TransferStructure.FILE));
         pipeline.addLast(CODEC_LIMIT, configuration
                 .getFtpInternalConfiguration()
                 .getGlobalTrafficShapingHandler());
@@ -128,6 +126,6 @@ public class FtpDataInitializer extends ChannelInitializer<SocketChannel> {
         DataNetworkHandler newNetworkHandler = new DataNetworkHandler(
                 configuration, newbusiness, isActive);
         pipeline.addLast(configuration.getFtpInternalConfiguration().getDataExecutor(),
-                HANDLER, newNetworkHandler);
+                         HANDLER, newNetworkHandler);
     }
 }

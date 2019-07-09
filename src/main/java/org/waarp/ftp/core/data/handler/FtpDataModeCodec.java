@@ -1,30 +1,26 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package org.waarp.ftp.core.data.handler;
-
-import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
-
 import org.waarp.common.exception.InvalidArgumentException;
 import org.waarp.common.file.DataBlock;
 import org.waarp.common.future.WaarpFuture;
@@ -33,14 +29,16 @@ import org.waarp.ftp.core.command.FtpArgumentCode.TransferStructure;
 import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.data.handler.FtpSeekAheadData.SeekAheadNoBackArrayException;
 
+import java.util.List;
+
 /**
  * First CODEC :<br>
  * - encode : takes a {@link DataBlock} and transforms it to a ByteBuf<br>
  * - decode : takes a ByteBuf and transforms it to a {@link DataBlock}<br>
  * STREAM and BLOCK mode are implemented. COMPRESSED mode is not implemented.
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public class FtpDataModeCodec extends ByteToMessageCodec<DataBlock> {
     /*
@@ -84,35 +82,30 @@ public class FtpDataModeCodec extends ByteToMessageCodec<DataBlock> {
      * Marker | Marker | | 8 bits | 8 bits | 8 bits | +--------+--------+--------+
      */
     /**
-     * Transfer Mode
-     */
-    private TransferMode mode = null;
-
-    /**
-     * Structure Mode
-     */
-    private TransferStructure structure = null;
-
-    /**
-     * Ftp Data Block
-     */
-    private DataBlock dataBlock = null;
-
-    /**
-     * Last byte for STREAM+RECORD
-     */
-    private int lastbyte = 0;
-
-    /**
-     * Is the underlying DataNetworkHandler ready to receive block
-     */
-    private volatile boolean isReady = false;
-
-    /**
      * Blocking step between DataNetworkHandler and this Codec in order to wait that the
      * DataNetworkHandler is ready
      */
     private final WaarpFuture codecLocked = new WaarpFuture();
+    /**
+     * Transfer Mode
+     */
+    private TransferMode mode = null;
+    /**
+     * Structure Mode
+     */
+    private TransferStructure structure = null;
+    /**
+     * Ftp Data Block
+     */
+    private DataBlock dataBlock = null;
+    /**
+     * Last byte for STREAM+RECORD
+     */
+    private int lastbyte = 0;
+    /**
+     * Is the underlying DataNetworkHandler ready to receive block
+     */
+    private volatile boolean isReady = false;
 
     /**
      * @param mode
@@ -127,7 +120,7 @@ public class FtpDataModeCodec extends ByteToMessageCodec<DataBlock> {
     /**
      * Inform the Codec that DataNetworkHandler is ready (called from DataNetworkHandler after
      * setCorrectCodec).
-     * 
+     *
      */
     public void setCodecReady() {
         codecLocked.setSuccess();
@@ -386,7 +379,7 @@ public class FtpDataModeCodec extends ByteToMessageCodec<DataBlock> {
 
     /**
      * Encode a DataBlock in the correct format for Mode
-     * 
+     *
      * @param msg
      * @return the ByteBuf or null when the last block is already done
      * @throws InvalidArgumentException
@@ -406,7 +399,7 @@ public class FtpDataModeCodec extends ByteToMessageCodec<DataBlock> {
             return buffer;
         } else if (mode == TransferMode.BLOCK) {
             int length = msg.getByteCount();
-            ByteBuf newbuf = ByteBufAllocator.DEFAULT.buffer(length > 0xFFFF ? 0xFFFF + 3 : length + 3);
+            ByteBuf newbuf = ByteBufAllocator.DEFAULT.buffer(length > 0xFFFF? 0xFFFF + 3 : length + 3);
             byte[] header = new byte[3];
             // Is there any data left
             if (length == 0) {

@@ -1,33 +1,26 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package org.waarp.ftp.simpleimpl.config;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
+import io.netty.handler.traffic.AbstractTrafficShapingHandler;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
-import io.netty.handler.traffic.AbstractTrafficShapingHandler;
 import org.waarp.common.digest.FilesystemBasedDigest;
 import org.waarp.common.file.FileParameterInterface;
 import org.waarp.common.file.filesystembased.FilesystemBasedDirImpl;
@@ -40,11 +33,17 @@ import org.waarp.ftp.core.control.BusinessHandler;
 import org.waarp.ftp.core.data.handler.DataBusinessHandler;
 import org.waarp.ftp.simpleimpl.file.SimpleAuth;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * FtpConfiguration based on a XML file
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public class FileBasedConfiguration extends FtpConfiguration {
     /**
@@ -156,16 +155,14 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Authentication Fields
      */
     private static final String XML_AUTHENTIFICATION_ADMIN = "admin";
-
-    /**
-     * RANGE of PORT for Passive Mode
-     */
-    private CircularIntValue RANGE_PORT = null;
-
     /**
      * All authentications
      */
     private final ConcurrentHashMap<String, SimpleAuth> authentications = new ConcurrentHashMap<String, SimpleAuth>();
+    /**
+     * RANGE of PORT for Passive Mode
+     */
+    private CircularIntValue RANGE_PORT = null;
 
     /**
      * @param classtype
@@ -177,16 +174,16 @@ public class FileBasedConfiguration extends FtpConfiguration {
      *            the FileParameter to use
      */
     public FileBasedConfiguration(Class<?> classtype,
-            Class<? extends BusinessHandler> businessHandler,
-            Class<? extends DataBusinessHandler> dataBusinessHandler,
-            FileParameterInterface fileParameter) {
+                                  Class<? extends BusinessHandler> businessHandler,
+                                  Class<? extends DataBusinessHandler> dataBusinessHandler,
+                                  FileParameterInterface fileParameter) {
         super(classtype, businessHandler, dataBusinessHandler, fileParameter);
         computeNbThreads();
     }
 
     /**
      * Initiate the configuration from the xml file
-     * 
+     *
      * @param filename
      * @return True if OK
      */
@@ -233,7 +230,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
         File file = new File(path);
         try {
             setBaseDirectory(FilesystemBasedDirImpl.normalizePath(file
-                    .getCanonicalPath()));
+                                                                          .getCanonicalPath()));
         } catch (IOException e1) {
             logger.error("Unable to set Home in Config file: " + filename);
             return false;
@@ -278,17 +275,17 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         node = document.selectSingleNode(XML_DELETEONABORT);
         if (node != null) {
-            setDeleteOnAbort(Integer.parseInt(node.getText()) == 1 ? true : false);
+            setDeleteOnAbort(Integer.parseInt(node.getText()) == 1? true : false);
         }
         node = document.selectSingleNode(XML_USENIO);
         if (node != null) {
             FilesystemBasedFileParameterImpl.useNio = Integer.parseInt(node
-                    .getText()) == 1 ? true : false;
+                                                                               .getText()) == 1? true : false;
         }
         node = document.selectSingleNode(XML_USEFASTMD5);
         if (node != null) {
-            FilesystemBasedDigest.setUseFastMd5(Integer.parseInt(node.getText()) == 1 ? true
-                    : false);
+            FilesystemBasedDigest.setUseFastMd5(Integer.parseInt(node.getText()) == 1? true
+                                                        : false);
         } else {
             FilesystemBasedDigest.setUseFastMd5(false);
         }
@@ -313,7 +310,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
         node = document.selectSingleNode(XML_AUTHENTIFICATION_FILE);
         if (node == null) {
             logger.error("Unable to find Authentication file in Config file: " +
-                    filename);
+                         filename);
             return false;
         }
         String fileauthent = node.getText();
@@ -322,12 +319,12 @@ public class FileBasedConfiguration extends FtpConfiguration {
             document = new SAXReader().read(fileauthent);
         } catch (DocumentException e) {
             logger.error("Unable to read the XML Authentication file: " +
-                    fileauthent, e);
+                         fileauthent, e);
             return false;
         }
         if (document == null) {
             logger.error("Unable to read the XML Authentication file: " +
-                    fileauthent);
+                         fileauthent);
             return false;
         }
         List<Node> list = document.selectNodes(XML_AUTHENTIFICATION_BASED);
@@ -347,7 +344,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
             node = nodebase.selectSingleNode(XML_AUTHENTIFICATION_ADMIN);
             boolean isAdmin = false;
             if (node != null) {
-                isAdmin = node.getText().equals("1") ? true : false;
+                isAdmin = node.getText().equals("1")? true : false;
             }
             List<Node> listaccount = nodebase
                     .selectNodes(XML_AUTHENTIFICATION_ACCOUNT);
@@ -388,7 +385,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
     }
 
     /**
-     * 
+     *
      * @param rangePort
      *            the range of available ports for Passive connections
      */

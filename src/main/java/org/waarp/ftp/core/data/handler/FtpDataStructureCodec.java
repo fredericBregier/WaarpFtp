@@ -1,31 +1,29 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package org.waarp.ftp.core.data.handler;
 
-import java.util.List;
-
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
-
 import org.waarp.common.exception.InvalidArgumentException;
 import org.waarp.common.file.DataBlock;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferStructure;
+
+import java.util.List;
 
 /**
  * Third CODEC :<br>
@@ -34,9 +32,9 @@ import org.waarp.ftp.core.command.FtpArgumentCode.TransferStructure;
  * implemented.<br>
  * Note that real actions are taken in the DataNetworkHandler according to the implementation of
  * FtpFile.
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 @Sharable
 class FtpDataStructureCodec extends MessageToMessageCodec<DataBlock, DataBlock> {
@@ -135,7 +133,7 @@ class FtpDataStructureCodec extends MessageToMessageCodec<DataBlock, DataBlock> 
         }
         // Type unimplemented
         throw new InvalidArgumentException("Structure unimplemented in " +
-                this.getClass().getName() + " codec " + structure.name());
+                                           this.getClass().getName() + " codec " + structure.name());
     }
 
     @Override
@@ -149,7 +147,7 @@ class FtpDataStructureCodec extends MessageToMessageCodec<DataBlock, DataBlock> 
         }
         // Type unimplemented
         throw new InvalidArgumentException("Structure unimplemented in " +
-                this.getClass().getName() + " codec " + structure.name());
+                                           this.getClass().getName() + " codec " + structure.name());
     }
 
 }

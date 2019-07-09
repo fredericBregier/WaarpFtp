@@ -1,17 +1,16 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -29,9 +28,9 @@ import org.waarp.ftp.core.session.FtpSession;
 
 /**
  * Filesystem implementation of a AuthInterface
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public abstract class FilesystemBasedFtpAuth extends FilesystemBasedAuthImpl implements FtpAuth {
 
@@ -41,7 +40,7 @@ public abstract class FilesystemBasedFtpAuth extends FilesystemBasedAuthImpl imp
     protected String account = null;
 
     /**
-     * 
+     *
      * @param session
      */
     public FilesystemBasedFtpAuth(FtpSession session) {
@@ -58,9 +57,9 @@ public abstract class FilesystemBasedFtpAuth extends FilesystemBasedAuthImpl imp
     /**
      * Set the account according to any implementation and could set the rootFromAuth. If NOOP is
      * returned, isIdentifed must be TRUE.
-     * 
+     *
      * @param account
-     * @return (NOOP,230) if the Account is OK, else return the following command that must follow
+     * @return (NOOP, 230) if the Account is OK, else return the following command that must follow
      *         and the associated reply
      * @throws Reply421Exception
      *             if there is a problem during the authentication
@@ -75,7 +74,7 @@ public abstract class FilesystemBasedFtpAuth extends FilesystemBasedAuthImpl imp
     /**
      * @param account
      *            the account to set
-     * @return (NOOP,230) if the Account is OK, else return the following command that must follow
+     * @return (NOOP, 230) if the Account is OK, else return the following command that must follow
      *         and the associated reply
      * @throws Reply421Exception
      *             if there is a problem during the authentication
@@ -98,7 +97,7 @@ public abstract class FilesystemBasedFtpAuth extends FilesystemBasedAuthImpl imp
      * Set the root relative Path from current status of Authentication (should be the highest level
      * for the current authentication). If setBusinessRootFromAuth returns null, by default set
      * /user or /user/account.
-     * 
+     *
      * @exception Reply421Exception
      *                if the business root is not available
      */
@@ -109,14 +108,14 @@ public abstract class FilesystemBasedFtpAuth extends FilesystemBasedAuthImpl imp
                 rootFromAuth = FtpDir.SEPARATOR + user;
             } else {
                 rootFromAuth = FtpDir.SEPARATOR + user +
-                        FtpDir.SEPARATOR + account;
+                               FtpDir.SEPARATOR + account;
             }
         }
     }
 
     /**
      * Clean object
-     * 
+     *
      */
     public void clear() {
         super.clear();
@@ -126,6 +125,6 @@ public abstract class FilesystemBasedFtpAuth extends FilesystemBasedAuthImpl imp
     @Override
     public String getBaseDirectory() {
         return ((FtpSession) getSession()).getConfiguration()
-                .getBaseDirectory();
+                                          .getBaseDirectory();
     }
 }

@@ -1,28 +1,22 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package org.waarp.ftp.core.session;
 
-import java.io.File;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-
 import io.netty.channel.Channel;
-
 import org.waarp.common.command.CommandInterface;
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.CommandAbstractException;
@@ -45,12 +39,16 @@ import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.ftp.core.file.FtpAuth;
 import org.waarp.ftp.core.file.FtpDir;
 
+import java.io.File;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+
 /**
  * Main class that stores any information that must be accessible from anywhere during the
  * connection of one user.
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public class FtpSession implements SessionInterface {
     /**
@@ -66,27 +64,26 @@ public class FtpSession implements SessionInterface {
      * Associated global configuration
      */
     private final FtpConfiguration configuration;
-
+    /**
+     * Is the control ready to accept command
+     */
+    private final WaarpFuture isReady = new WaarpFuture(true);
     /**
      * Associated Binary connection
      */
     private volatile FtpDataAsyncConn dataConn = null;
-
     /**
      * Ftp Authentication
      */
     private FtpAuth ftpAuth = null;
-
     /**
      * Ftp DirInterface configuration and access
      */
     private FtpDir ftpDir = null;
-
     /**
      * Previous Command
      */
     private AbstractCommand previousCommand = null;
-
     /**
      * Current Command
      */
@@ -95,27 +92,18 @@ public class FtpSession implements SessionInterface {
      * Is the current command finished
      */
     private volatile boolean isCurrentCommandFinished = true;
-
     /**
      * Associated Reply Code
      */
     private ReplyCode replyCode = null;
-
     /**
      * Real text for answer
      */
     private String answer = null;
-
     /**
      * Current Restart information
      */
     private Restart restart = null;
-
-    /**
-     * Is the control ready to accept command
-     */
-    private final WaarpFuture isReady = new WaarpFuture(true);
-
     /**
      * Is the current session using SSL on Control
      */
@@ -131,13 +119,23 @@ public class FtpSession implements SessionInterface {
 
     /**
      * Constructor
-     * 
+     *
      * @param configuration
      * @param handler
      */
     public FtpSession(FtpConfiguration configuration, BusinessHandler handler) {
         this.configuration = configuration;
         businessHandler = handler;
+    }
+
+    /**
+     *
+     * @param path
+     * @return the basename from the given path
+     */
+    public static String getBasename(String path) {
+        File file = new File(path);
+        return file.getName();
     }
 
     /**
@@ -149,7 +147,7 @@ public class FtpSession implements SessionInterface {
 
     /**
      * Get the configuration
-     * 
+     *
      * @return the configuration
      */
     public FtpConfiguration getConfiguration() {
@@ -189,7 +187,7 @@ public class FtpSession implements SessionInterface {
 
     /**
      * Special initialization (FtpExec with Https session)
-     * 
+     *
      * @param auth
      * @param dir
      * @param restart
@@ -208,7 +206,7 @@ public class FtpSession implements SessionInterface {
     }
 
     /**
-     * 
+     *
      * @return The network handler associated with control
      */
     public NetworkHandler getNetworkHandler() {
@@ -220,7 +218,7 @@ public class FtpSession implements SessionInterface {
 
     /**
      * Set the new current command
-     * 
+     *
      * @param command
      */
     public void setNextCommand(CommandInterface command) {
@@ -246,7 +244,7 @@ public class FtpSession implements SessionInterface {
     /**
      * Set the previous command as the new current command (used after a incorrect sequence of
      * commands or unknown command)
-     * 
+     *
      */
     public void setPreviousAsCurrentCommand() {
         currentCommand = previousCommand;
@@ -254,7 +252,7 @@ public class FtpSession implements SessionInterface {
     }
 
     /**
-     * 
+     *
      * @return True if the Current Command is already Finished (ready to accept a new one)
      */
     public boolean isCurrentCommandFinished() {
@@ -297,30 +295,23 @@ public class FtpSession implements SessionInterface {
     }
 
     /**
-     * @param exception
-     */
-    public void setReplyCode(CommandAbstractException exception) {
-        this.setReplyCode(exception.code, exception.message);
-    }
-
-    /**
      * Set Exit code after an error
-     * 
+     *
      * @param answer
      */
     public void setExitErrorCode(String answer) {
         this.setReplyCode(ReplyCode.REPLY_421_SERVICE_NOT_AVAILABLE_CLOSING_CONTROL_CONNECTION,
-                answer);
+                          answer);
     }
 
     /**
      * Set Exit normal code
-     * 
+     *
      * @param answer
      */
     public void setExitNormalCode(String answer) {
         this.setReplyCode(ReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION,
-                answer);
+                          answer);
     }
 
     /**
@@ -328,6 +319,13 @@ public class FtpSession implements SessionInterface {
      */
     public ReplyCode getReplyCode() {
         return replyCode;
+    }
+
+    /**
+     * @param exception
+     */
+    public void setReplyCode(CommandAbstractException exception) {
+        this.setReplyCode(exception.code, exception.message);
     }
 
     public void clear() {
@@ -380,7 +378,7 @@ public class FtpSession implements SessionInterface {
                     currentCommand.getArg() + " ";
         }
         if (replyCode != null) {
-            mesg += "Reply: " + (answer != null ? answer : replyCode.getMesg()) +
+            mesg += "Reply: " + (answer != null? answer : replyCode.getMesg()) +
                     " ";
         }
         if (dataConn != null) {
@@ -413,18 +411,8 @@ public class FtpSession implements SessionInterface {
     }
 
     /**
-     * 
-     * @param path
-     * @return the basename from the given path
-     */
-    public static String getBasename(String path) {
-        File file = new File(path);
-        return file.getName();
-    }
-
-    /**
      * Reinitialize the authentication to the connection step
-     * 
+     *
      */
     public void reinitFtpAuth() {
         AbstractCommand connectioncommand = new ConnectionCommand(this);
@@ -454,7 +442,7 @@ public class FtpSession implements SessionInterface {
 
     /**
      * Try to open a connection. Do the intermediate reply if any (150) and the final one (125)
-     * 
+     *
      * @throws Reply425Exception
      *             if the connection cannot be opened
      */
@@ -495,8 +483,8 @@ public class FtpSession implements SessionInterface {
                 }
                 Thread.yield();
             }
-            logger.debug("DEBUG : " + (waitForSsl != null ? waitForSsl.isDone() : "not Finished") + ":" + isSsl + ":"
-                    + getControlChannel());
+            logger.debug("DEBUG : " + (waitForSsl != null? waitForSsl.isDone() : "not Finished") + ":" + isSsl + ":"
+                         + getControlChannel());
         }
         return isSsl;
     }

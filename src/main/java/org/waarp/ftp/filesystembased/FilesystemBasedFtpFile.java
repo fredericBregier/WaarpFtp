@@ -1,27 +1,23 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package org.waarp.ftp.filesystembased;
 
-import java.util.concurrent.locks.ReentrantLock;
-
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-
 import org.waarp.common.command.exception.CommandAbstractException;
 import org.waarp.common.exception.FileEndOfTransferException;
 import org.waarp.common.exception.FileTransferException;
@@ -33,11 +29,13 @@ import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.ftp.core.file.FtpFile;
 import org.waarp.ftp.core.session.FtpSession;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * Filesystem implementation of a FtpFile
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl implements FtpFile {
     /**
@@ -60,7 +58,7 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
      * @throws CommandAbstractException
      */
     public FilesystemBasedFtpFile(FtpSession session,
-            FilesystemBasedFtpDir dir, String path, boolean append)
+                                  FilesystemBasedFtpDir dir, String path, boolean append)
             throws CommandAbstractException {
         super(session, dir, path, append);
     }
@@ -69,9 +67,9 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
     public long length() throws CommandAbstractException {
         long length = super.length();
         if (((FtpSession) getSession()).getDataConn()
-                .isFileStreamBlockAsciiImage()) {
+                                       .isFileStreamBlockAsciiImage()) {
             long block = (long) Math.ceil((double) length /
-                    (double) getSession().getBlockSize());
+                                          (double) getSession().getBlockSize());
             length += (block + 3) * 3;
         }
         return length;
@@ -79,7 +77,7 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
 
     /**
      * Launch retrieve operation (internal method, should not be called directly)
-     * 
+     *
      */
     public void trueRetrieve() {
         retrieveLock.lock();
@@ -90,7 +88,7 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
             // First check if ready to run from Control
             try {
                 ((FtpSession) session).getDataConn().getFtpTransferControl()
-                        .waitForDataNetworkHandlerReady();
+                                      .waitForDataNetworkHandlerReady();
             } catch (InterruptedException e) {
                 // bad thing
                 logger.warn("DataNetworkHandler was not ready", e);
@@ -103,12 +101,12 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
                 if (this.isInReading()) {
                     logger.error("Should not be", e);
                     ((FtpSession) session).getDataConn().getFtpTransferControl()
-                            .setTransferAbortedFromInternal(true);
+                                          .setTransferAbortedFromInternal(true);
                 }
                 logger.debug("Possible call while channel was on going to be closed once transfer was done", e);
                 closeFile();
                 ((FtpSession) session).getDataConn().getFtpTransferControl()
-                        .setPreEndOfTransfer();
+                                      .setPreEndOfTransfer();
                 return;
             }
             DataBlock block = null;
@@ -120,7 +118,7 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
                 // detected)
                 closeFile();
                 ((FtpSession) session).getDataConn().getFtpTransferControl()
-                        .setPreEndOfTransfer();
+                                      .setPreEndOfTransfer();
                 return;
             }
             if (block == null) {
@@ -129,7 +127,7 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
                 // detected)
                 closeFile();
                 ((FtpSession) session).getDataConn().getFtpTransferControl()
-                        .setPreEndOfTransfer();
+                                      .setPreEndOfTransfer();
                 return;
             }
             // While not last block
@@ -151,7 +149,7 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
                     // Wait for last write
                     if (future.isSuccess()) {
                         ((FtpSession) session).getDataConn()
-                                .getFtpTransferControl().setPreEndOfTransfer();
+                                              .getFtpTransferControl().setPreEndOfTransfer();
                     } else {
                         throw new FileTransferException("File transfer in error");
                     }
@@ -172,7 +170,7 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
                 }
                 if (future.isSuccess()) {
                     ((FtpSession) session).getDataConn().getFtpTransferControl()
-                            .setPreEndOfTransfer();
+                                          .setPreEndOfTransfer();
                 } else {
                     throw new FileTransferException("Write is not successful");
                 }
@@ -180,11 +178,11 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
         } catch (FileTransferException e) {
             // An error occurs!
             ((FtpSession) session).getDataConn().getFtpTransferControl()
-                    .setTransferAbortedFromInternal(true);
+                                  .setTransferAbortedFromInternal(true);
         } catch (CommandAbstractException e) {
             logger.error("Should not be", e);
             ((FtpSession) session).getDataConn().getFtpTransferControl()
-                    .setTransferAbortedFromInternal(true);
+                                  .setTransferAbortedFromInternal(true);
         } finally {
             retrieveLock.unlock();
         }

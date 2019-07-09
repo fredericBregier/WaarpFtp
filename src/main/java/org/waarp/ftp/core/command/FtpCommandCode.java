@@ -1,17 +1,16 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -32,16 +31,16 @@ import org.waarp.ftp.core.session.FtpSession;
  * Main class<br>
  * Previous Valid Command (null means all are valid)<br>
  * Next Valid Commands (none means all are valid)<br>
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public enum FtpCommandCode {
     // XXX CONNECTION
     /**
      * Command to simulate the beginning of a connection in order to force the authentication step.<br>
-     * 
-     * 
+     *
+     *
      * 120->220<br>
      * 220<br>
      * 421<br>
@@ -62,7 +61,7 @@ public enum FtpCommandCode {
      * already supplied and beginning the login sequence again. All transfer parameters are
      * unchanged and any file transfer in progress is completed under the old access control
      * parameters.<br>
-     * 
+     *
      * 230<br>
      * 530<br>
      * 500, 501, 421<br>
@@ -76,8 +75,8 @@ public enum FtpCommandCode {
      * desirable in general to "mask" it or suppress typeout. It appears that the server has no
      * foolproof way to achieve this. It is therefore the responsibility of the user-FTP process to
      * hide the sensitive password information.<br>
-     * 
-     * 
+     *
+     *
      * 230<br>
      * 202<br>
      * 530<br>
@@ -91,7 +90,7 @@ public enum FtpCommandCode {
      * others only for specific access, such as storing files. In the latter case the command may
      * arrive at any time.<br>
      * <br>
-     * 
+     *
      * There are reply codes to differentiate these cases for the automation: when account
      * information is required for login, the response to a successful PASSword command is reply
      * code 332. On the other hand, if account information is NOT required for login, the reply to a
@@ -99,8 +98,8 @@ public enum FtpCommandCode {
      * issued later in the dialogue, the server should return a 332 or 532 reply depending on
      * whether it stores (pending receipt of the ACCounT command) or discards the command,
      * respectively.<br>
-     * 
-     * 
+     *
+     *
      * 230<br>
      * 202<br>
      * 530<br>
@@ -112,8 +111,8 @@ public enum FtpCommandCode {
      * or retrieval without altering his login or accounting information. Transfer parameters are
      * similarly unchanged. The argument is a pathname specifying a directory or other system
      * dependent file group designator.<br>
-     * 
-     * 
+     *
+     *
      * 250<br>
      * 500, 501, 502, 421, 530, 550<br>
      */
@@ -123,8 +122,8 @@ public enum FtpCommandCode {
      * programs for transferring directory trees between operating systems having different syntaxes
      * for naming the parent directory. The reply codes shall be identical to the reply codes of
      * CWD. See Appendix II for further details.<br>
-     * 
-     * 
+     *
+     *
      * 200<br>
      * 500, 501, 502, 421, 530, 550<br>
      */
@@ -136,8 +135,8 @@ public enum FtpCommandCode {
      * designator.<br>
      * <br>
      * As for now, this command will not be implemented, so returns 502.<br>
-     * 
-     * 
+     *
+     *
      * 202, 250<br>
      * 500, 501, 502, 421, 530, 550<br>
      */
@@ -150,7 +149,7 @@ public enum FtpCommandCode {
      * himself immediately after the control connection is opened. A USER command may be expected to
      * follow.<br>
      * <br>
-     * 
+     *
      * 120<br>
      * 220<br>
      * 220<br>
@@ -158,7 +157,7 @@ public enum FtpCommandCode {
      * 500, 502<br>
      */
     REIN(org.waarp.ftp.core.command.access.REIN.class, null,
-            org.waarp.ftp.core.command.access.USER.class),
+         org.waarp.ftp.core.command.access.USER.class),
     /**
      * This command terminates a USER and if file transfer is not in progress, the server closes the
      * control connection. If file transfer is in progress, the connection will remain open for
@@ -166,11 +165,11 @@ public enum FtpCommandCode {
      * for several USERs but does not wish to close and then reopen connections for each, then the
      * REIN command should be used instead of QUIT.<br>
      * <br>
-     * 
+     *
      * An unexpected close on the control connection will cause the server to take the effective
      * action of an abort (ABOR) and a logout (QUIT).<br>
-     * 
-     * 
+     *
+     *
      * 221<br>
      * 500<br>
      */
@@ -186,15 +185,15 @@ public enum FtpCommandCode {
      * decimal number (in character string representation). The fields are separated by commas. A
      * port command would be:<br>
      * <br>
-     * 
+     *
      * <pre>
      * PORT h1,h2,h3,h4,p1,p2
      * </pre>
-     * 
+     *
      * where h1 is the high order 8 bits of the internet host address.<br>
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * 200<br>
      * 500, 501, 421, 530<br>
      */
@@ -204,9 +203,9 @@ public enum FtpCommandCode {
      * data port) and to wait for a connection rather than initiate one upon receipt of a transfer
      * command. The response to this command includes the host and port address this server is
      * listening on.<br>
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * 227<br>
      * 500, 501, 502, 421, 530<br>
      */
@@ -218,9 +217,9 @@ public enum FtpCommandCode {
      * the second parameter for local byte is a decimal integer to indicate Bytesize. The parameters
      * are separated by a <code>&lt;SP&gt;</code> (Space, ASCII code 32).<br>
      * <br>
-     * 
+     *
      * The following codes are assigned for type:<br>
-     * 
+     *
      * <pre>
      * \    /
      *                A - ASCII |    | N - Non-print
@@ -230,10 +229,10 @@ public enum FtpCommandCode {
      *                I - Image
      *                L &lt;byte size&gt; - Local byte Byte size
      * </pre>
-     * 
+     *
      * The default representation type is ASCII Non-print. If the Format parameter is changed, and
      * later just the first argument is changed, Format then returns to the Non-print default.<br>
-     * 
+     *
      * 200<br>
      * 500, 501, 504, 421, 530<br>
      */
@@ -242,18 +241,18 @@ public enum FtpCommandCode {
      * The argument is a single Telnet character code specifying file structure described in the
      * Section on Data Representation and Storage.<br>
      * <br>
-     * 
+     *
      * The following codes are assigned for structure:<br>
-     * 
+     *
      * <pre>
      * F - FtpFile (no record structure)
      *                R - Record structure
      *                P - Page structure
      * </pre>
-     * 
+     *
      * The default structure is FtpFile.<br>
-     * 
-     * 
+     *
+     *
      * 200<br>
      * 500, 501, 504, 421, 530<br>
      */
@@ -262,18 +261,18 @@ public enum FtpCommandCode {
      * The argument is a single Telnet character code specifying the data transfer modes described
      * in the Section on Transmission Modes.<br>
      * <br>
-     * 
+     *
      * The following codes are assigned for transfer modes:<br>
-     * 
+     *
      * <pre>
      * S - Stream
      *                B - Block
      *                C - Compressed
      * </pre>
-     * 
+     *
      * The default transfer mode is Stream.<br>
-     * 
-     * 
+     *
+     *
      * 200<br>
      * 500, 501, 504, 421, 530<br>
      */
@@ -284,7 +283,7 @@ public enum FtpCommandCode {
      * This command causes the server-DTP to transfer a copy of the file, specified in the pathname,
      * to the server- or user-DTP at the other end of the data connection. The status and contents
      * of the file at the server site shall be unaffected.<br>
-     * 
+     *
      * 125, 150<br>
      * (110)<br>
      * 226, 250<br>
@@ -299,8 +298,8 @@ public enum FtpCommandCode {
      * at the server site, then its contents shall be replaced by the data being transferred. A new
      * file is created at the server site if the file specified in the pathname does not already
      * exist.<br>
-     * 
-     * 
+     *
+     *
      * 125, 150<br>
      * (110)<br>
      * 226, 250<br>
@@ -313,8 +312,8 @@ public enum FtpCommandCode {
      * This command behaves like STOR except that the resultant file is to be created in the current
      * directory under a name unique to that directory. The 250 Transfer Started response must
      * include the name generated.<br>
-     * 
-     * 
+     *
+     *
      * 125, 150<br>
      * (110)<br>
      * 226, 250<br>
@@ -328,8 +327,8 @@ public enum FtpCommandCode {
      * to store the data in a file at the server site. If the file specified in the pathname exists
      * at the server site, then the data shall be appended to that file; otherwise the file
      * specified in the pathname shall be created at the server site.<br>
-     * 
-     * 
+     *
+     *
      * 125, 150<br>
      * (110)<br>
      * 226, 250<br>
@@ -350,8 +349,8 @@ public enum FtpCommandCode {
      * operation) by those servers which do not require that the maximum size of the file be
      * declared beforehand, and those servers interested in only the maximum record or page size
      * should accept a dummy value in the first argument and ignore it.<br>
-     * 
-     * 
+     *
+     *
      * 125, 150<br>
      * 226, 250<br>
      * 425, 426, 451<br>
@@ -372,7 +371,7 @@ public enum FtpCommandCode {
      * method.<br>
      * <br>
      * This command will accept commands of transfer parameter following since some clients do this.<br>
-     * 
+     *
      * 500, 501, 502, 421, 530<br>
      * 350<br>
      */
@@ -391,8 +390,8 @@ public enum FtpCommandCode {
     /**
      * This command specifies the old pathname of the file which is to be renamed. This command must
      * be immediately followed by a "rename to" RNTO command specifying the new file pathname.<br>
-     * 
-     * 
+     *
+     *
      * 450, 550<br>
      * 500, 501, 502, 421, 530<br>
      * 350<br>
@@ -404,7 +403,7 @@ public enum FtpCommandCode {
     /**
      * This command specifies the new pathname of the file specified in the immediately preceding
      * "rename from" RNFR command. Together the two commands cause a file to be renamed. <br>
-     * 
+     *
      * 250<br>
      * 532, 553<br>
      * 500, 501, 502, 503, 421, 530<br>
@@ -419,21 +418,21 @@ public enum FtpCommandCode {
      * command has been completed (including data transfer). The control connection is not to be
      * closed by the server, but the data connection must be closed.<br>
      * <br>
-     * 
+     *
      * There are two cases for the server upon receipt of this command: (1) the FTP service command
      * was already completed, or (2) the FTP service command is still in progress.<br>
      * <br>
-     * 
+     *
      * In the first case, the server closes the data connection (if it is open) and responds with a
      * 226 reply, indicating that the abort command was successfully processed.<br>
      * <br>
-     * 
+     *
      * In the second case, the server aborts the FTP service in progress and closes the data
      * connection, returning a 426 reply to indicate that the service request terminated abnormally.
      * The server then sends a 226 reply, indicating that the abort command was successfully
      * processed.<br>
-     * 
-     * 
+     *
+     *
      * 225, 226<br>
      * 500, 501, 502, 421<br>
      */
@@ -442,8 +441,8 @@ public enum FtpCommandCode {
      * This command causes the file specified in the pathname to be deleted at the server site. If
      * an extra level of protection is desired (such as the query, "Do you really wish to delete?"),
      * it should be provided by the user-FTP process.<br>
-     * 
-     * 
+     *
+     *
      * 250<br>
      * 450, 550<br>
      * 500, 501, 502, 421, 530<br>
@@ -453,8 +452,8 @@ public enum FtpCommandCode {
      * This command causes the directory specified in the pathname to be removed as a directory (if
      * the pathname is absolute) or as a subdirectory of the current working directory (if the
      * pathname is relative).<br>
-     * 
-     * 
+     *
+     *
      * 250<br>
      * 500, 501, 502, 421, 530, 550<br>
      */
@@ -463,14 +462,14 @@ public enum FtpCommandCode {
      * This command causes the directory specified in the pathname to be created as a directory (if
      * the pathname is absolute) or as a subdirectory of the current working directory (if the
      * pathname is relative).<br>
-     * 
+     *
      * 257<br>
      * 500, 501, 502, 421, 530, 550<br>
      */
     MKD(org.waarp.ftp.core.command.service.MKD.class, null),
     /**
      * This command causes the name of the current working directory to be returned in the reply.<br>
-     * 
+     *
      * 257<br>
      * 500, 501, 502, 421, 550<br>
      */
@@ -486,8 +485,8 @@ public enum FtpCommandCode {
      * in a program, but may be quite useful to a human user.<br>
      * <br>
      * The option '-a' is accepted but ignored.<br>
-     * 
-     * 
+     *
+     *
      * 125, 150<br>
      * 226, 250<br>
      * 425, 426, 451<br>
@@ -506,8 +505,8 @@ public enum FtpCommandCode {
      * example, in the implementation of a "multiple get" function.<br>
      * <br>
      * The option '-l' is accepted and turns to LIST command.<br>
-     * 
-     * 
+     *
+     *
      * 125, 150<br>
      * 226, 250<br>
      * 425, 426, 451<br>
@@ -523,7 +522,7 @@ public enum FtpCommandCode {
      * <br>
      * As for now, this command will not be implemented, so returns 502.<br>
      * <br>
-     * 
+     *
      * 200<br>
      * 202<br>
      * 500, 501, 530<br>
@@ -535,7 +534,7 @@ public enum FtpCommandCode {
      * Numbers document.<br>
      * <br>
      * Returns "UNIX Type: L8".<br>
-     * 
+     *
      * 215<br>
      * 500, 501, 502, 421<br>
      */
@@ -551,8 +550,8 @@ public enum FtpCommandCode {
      * file names or attributes associated with that specification. If no argument is given, the
      * server should return general status information about the server FTP process. This should
      * include current values of all transfer parameters and the status of connections.<br>
-     * 
-     * 
+     *
+     *
      * 211, 212, 213<br>
      * 450<br>
      * 500, 501, 502, 421, 530<br>
@@ -564,8 +563,8 @@ public enum FtpCommandCode {
      * command name) and return more specific information as a response. The reply is type 211 or
      * 214. It is suggested that HELP be allowed before entering a USER command. The server may use
      * this reply to specify site-dependent parameters, e.g., in response to HELP SITE.<br>
-     * 
-     * 
+     *
+     *
      * 211, 214<br>
      * 500, 501, 502, 421<br>
      */
@@ -573,8 +572,8 @@ public enum FtpCommandCode {
     /**
      * This command does not affect any parameters or previously entered commands. It specifies no
      * action other than that the server send an OK reply.<br>
-     * 
-     * 
+     *
+     *
      * 200<br>
      * 500 421<br>
      */
@@ -584,37 +583,37 @@ public enum FtpCommandCode {
 
     /**
      * Change to a new working directory. Same as CWD<br>
-     * 
-     * 
+     *
+     *
      * 250<br>
      * 500, 501, 502, 421, 530, 550<br>
      */
     XCWD(org.waarp.ftp.core.command.rfc775.XCWD.class, null),
     /**
      * Change to the parent of the current working directory. Same as CDUP.<br>
-     * 
-     * 
+     *
+     *
      * 200<br>
      * 500, 501, 502, 421, 530, 550<br>
      */
     XCUP(org.waarp.ftp.core.command.rfc775.XCUP.class, null),
     /**
      * Remove the directory. Same as RMD.<br>
-     * 
+     *
      * 250<br>
      * 500, 501, 502, 421, 530, 550<br>
      */
     XRMD(org.waarp.ftp.core.command.rfc775.XRMD.class, null),
     /**
      * Make a directory. Same as MKD.<br>
-     * 
+     *
      * 257<br>
      * 500, 501, 502, 421, 530, 550<br>
      */
     XMKD(org.waarp.ftp.core.command.rfc775.XMKD.class, null),
     /**
      * Print the current working directory. Same as PWD.<br>
-     * 
+     *
      * 257<br>
      * 500, 501, 502, 421, 550<br>
      */
@@ -625,18 +624,18 @@ public enum FtpCommandCode {
      * The FTP command, MODIFICATION TIME (MDTM), can be used to determine when a file in the server
      * NVFS was last modified.<br>
      * <br>
-     * 
+     *
      * The "pathname" specifies an object in the NVFS that may be the object of a RETR command.
      * Attempts to query the modification time of files that exist but are unable to be retrieved
      * may generate an error- response, or can result in a positive response carrying a time-val
      * with an unspecified value, the choice being made by the server-PI.<br>
      * <br>
-     * 
+     *
      * The server-PI will respond to the MDTM command with a 213 reply giving the last modification
      * time of the file whose pathname was supplied, or a 550 reply if the file does not exist, the
      * modification time is unavailable, or some other error has occurred.<br>
-     * 
-     * 
+     *
+     *
      * 213<br>
      * 500, 501, 550<br>
      */
@@ -649,7 +648,7 @@ public enum FtpCommandCode {
      * connection that would be created were one created now. Thus, the result of the SIZE command
      * is dependent on the currently established STRU, MODE, and TYPE parameters.<br>
      * <br>
-     * 
+     *
      * The SIZE command returns how many octets would be transferred if the file were to be
      * transferred using the current transfer structure, mode, and type. This command is normally
      * used in conjunction with the RESTART (REST) command when STORing a file to a remote server in
@@ -657,8 +656,8 @@ public enum FtpCommandCode {
      * transferred file, do any appropriate conversion, and count the number of octets that would be
      * generated when sending the file in order to correctly respond to this command. Estimates of
      * the file transfer size MUST NOT be returned; only precise information is acceptable.<br>
-     * 
-     * 
+     *
+     *
      * 213<br>
      * 500, 501, 550<br>
      */
@@ -668,12 +667,12 @@ public enum FtpCommandCode {
      * the server-FTP process. This command differs from the LIST command in that the format of the
      * replies is strictly defined although extensible.<br>
      * <br>
-     * 
+     *
      * MLSD lists the contents of a directory if a directory is named, otherwise a 501 reply is
      * returned. If no object is named, the current directory is assumed. That will cause MLSD to
      * list the contents of the current directory.<br>
-     * 
-     * 
+     *
+     *
      * 125, 150<br>
      * 226, 250<br>
      * 425, 426, 451<br>
@@ -686,11 +685,11 @@ public enum FtpCommandCode {
      * the server-FTP process. This command differs from the LIST command in that the format of the
      * replies is strictly defined although extensible.<br>
      * <br>
-     * 
+     *
      * MLST provides data about exactly the object named on its command line, and no others. If no
      * object is named, the current directory is assumed. That will cause MLST to send a one-line
      * response, describing the current directory itself.<br>
-     * 
+     *
      * 125, 150<br>
      * 226, 250<br>
      * 425, 426, 451<br>
@@ -703,26 +702,26 @@ public enum FtpCommandCode {
     /**
      * The FEAT command consists solely of the word "FEAT". It has no parameters or arguments.<br>
      * <br>
-     * 
+     *
      * Where a server-FTP process does not support the FEAT command, it will respond to the FEAT
      * command with a 500 or 502 reply. This is simply the normal "unrecognized command" reply that
      * any unknown command would elicit. Errors in the command syntax, such as giving parameters,
      * will result in a 501 reply.<br>
      * <br>
-     * 
+     *
      * Server-FTP processes that recognize the FEAT command, but implement no extended features, and
      * therefore have nothing to report, SHOULD respond with the "no-features" 211 reply. However,
      * as this case is practically indistinguishable from a server-FTP that does not recognize the
      * FEAT command, a 500 or 502 reply MAY also be used. The "no-features" reply MUST NOT use the
      * multi-line response format, exactly one response line is required and permitted.<br>
      * <br>
-     * 
+     *
      * Replies to the FEAT command MUST comply with the following syntax. Text on the first line of
      * the reply is free form, and not interpreted, and has no practical use, as this text is not
      * expected to be revealed to end users. The syntax of other reply lines is precisely defined,
      * and if present, MUST be exactly as specified.<br>
      * <br>
-     * 
+     *
      * <pre>
      * feat-response   = error-response / no-features / feature-listing
      *         no-features     = &quot;211&quot; SP *TCHAR CRLF
@@ -733,13 +732,13 @@ public enum FtpCommandCode {
      *         feature-label   = 1*VCHAR
      *         feature-parms   = 1*TCHAR
      * </pre>
-     * 
+     *
      * Note that each feature line in the feature-listing begins with a single space. That space is
      * not optional, nor does it indicate general white space. This space guarantees that the
      * feature line can never be misinterpreted as the end of the feature-listing, but is required
      * even where there is no possibility of ambiguity.<br>
      * <br>
-     * 
+     *
      * Each extension supported must be listed on a separate line to facilitate the possible
      * inclusion of parameters supported by each extension command. The feature-label to be used in
      * the response to the FEAT command will be specified as each new feature is added to the FTP
@@ -748,18 +747,18 @@ public enum FtpCommandCode {
      * included are to be specified with the definition of the command concerned. That specification
      * shall also specify how any parameters present are to be interpreted.<br>
      * <br>
-     * 
+     *
      * The feature-label and feature-parms are nominally case sensitive, however the definitions of
      * specific labels and parameters specify the precise interpretation, and it is to be expected
      * that those definitions will usually specify the label and parameters in a case independent
      * manner. Where this is done, implementations are recommended to use upper case letters when
      * transmitting the feature response.<br>
      * <br>
-     * 
+     *
      * The FEAT command itself is not included in the list of features supported, support for the
      * FEAT command is indicated by return of a reply other than a 500 or 502 reply.<br>
-     * 
-     * 
+     *
+     *
      * 211<br>
      * 500, 501, 550<br>
      */
@@ -770,8 +769,8 @@ public enum FtpCommandCode {
      * and syntax, will vary with the target command indicated, and will be specified with the
      * definition of that command. Where no OPTS behavior is defined for a particular command there
      * are no options available for that command.<br>
-     * 
-     * 
+     *
+     *
      * 200<br>
      * 451, 500, 501, 550<br>
      */
@@ -783,37 +782,37 @@ public enum FtpCommandCode {
      * The extended address MUST consist of the network protocol as well as the network and
      * transport addresses. The format of EPRT is:<br>
      * <br>
-     * 
+     *
      * <pre>
      * EPRT&lt;space&gt;&lt;d&gt;&lt;net-prt&gt;&lt;d&gt;&lt;net-addr&gt;&lt;d&gt;&lt;tcp-port&gt;&lt;d&gt;
      * </pre>
-     * 
+     *
      * <br>
      * The EPRT command keyword MUST be followed by a single space (ASCII 32). Following the space,
      * a delimiter character (<code>&lt;d&gt;</code>) MUST be specified. The delimiter character
      * MUST be one of the ASCII characters in range 33-126 inclusive. The character "|" (ASCII 124)
      * is recommended unless it coincides with a character needed to encode the network address.<br>
-     * 
+     *
      * The <code>&lt;net-prt&gt;</code> argument MUST be an address family number defined by IANA in
      * the latest Assigned Numbers RFC (RFC 1700 [RP94] as of the writing of this document). This
      * number indicates the protocol to be used (and, implicitly, the address length). This document
      * will use two of address family numbers from [RP94] as examples, according to the following
      * table:<br>
      * <br>
-     * 
+     *
      * <pre>
      * AF Number   Protocol
      *         ---------   --------
      *         1           Internet Protocol, Version 4 [Pos81a]
      *         2           Internet Protocol, Version 6 [DH96]
      * </pre>
-     * 
+     *
      * <br>
      * The <code>&lt;net-addr&gt;</code> is a protocol specific string representation of the network
      * address. For the two address families specified above (AF Number 1 and 2), addresses MUST be
      * in the following format:<br>
      * <br>
-     * 
+     *
      * <pre>
      * AF Number   Address Format      Example
      *         ---------   --------------      -------
@@ -822,12 +821,12 @@ public enum FtpCommandCode {
      *                     representations
      *                     defined in [HD96]
      * </pre>
-     * 
+     *
      * <br>
      * The <code>&lt;tcp-port&gt;</code> argument must be the string representation of the number of
      * the TCP port on which the host is listening for the data connection.<br>
-     * 
-     * 
+     *
+     *
      * 200<br>
      * 500, 501, 522, 421, 530<br>
      */
@@ -842,26 +841,26 @@ public enum FtpCommandCode {
      * for entering passive mode using an extended address MUST be 229. The interpretation of this
      * code, according to [PR85] is:<br>
      * <br>
-     * 
+     *
      * <pre>
      * 2yz Positive Completion
      *         x2z Connections
      *         xy9 Extended Passive Mode Entered
      * </pre>
-     * 
+     *
      * <br>
      * The text returned in response to the EPSV command MUST be:<br>
      * <br>
-     * 
+     *
      * <pre>
      * &lt;text indicating server is entering extended passive mode&gt; (&lt;d&gt;&lt;d&gt;&lt;d&gt;&lt;tcp-port&gt;&lt;d&gt;)
      * </pre>
-     * 
+     *
      * <br>
      * The portion of the string enclosed in parentheses MUST be the exact string needed by the EPRT
      * command to open the data connection, as specified above.<br>
      * <br>
-     * 
+     *
      * The first two fields contained in the parenthesis MUST be blank. The third field MUST be the
      * string representation of the TCP port number on which the server is listening for a data
      * connection. The network protocol used by the data connection will be the same network
@@ -869,16 +868,16 @@ public enum FtpCommandCode {
      * the data connection will be the same network address used for the control connection. An
      * example response string follows:<br>
      * <br>
-     * 
+     *
      * <pre>
      * Entering Extended Passive Mode (|||6446|)
      * </pre>
-     * 
+     *
      * <br>
      * The standard negative error codes 500 and 501 are sufficient to handle all errors involving
      * the EPSV command (e.g., syntax errors).<br>
      * <br>
-     * 
+     *
      * When the EPSV command is issued with no argument, the server will choose the network protocol
      * for the data connection based on the protocol used for the control connection. However, in
      * the case of proxy FTP, this protocol might not be appropriate for communication between the
@@ -888,32 +887,32 @@ public enum FtpCommandCode {
      * listening connection. The client can then send an EPSV command requesting the use of a
      * specific network protocol, as follows:<br>
      * <br>
-     * 
+     *
      * <pre>
      * EPSV&lt;space&gt;&lt;net-prt&gt;
      * </pre>
-     * 
+     *
      * <br>
      * If the requested protocol is supported by the server, it SHOULD use the protocol. If not, the
      * server MUST return the 522 error messages as outlined in section 2.<br>
      * <br>
-     * 
+     *
      * <b>The following part is not implemented.</b><br>
      * Finally, the EPSV command can be used with the argument "ALL" to inform Network Address
      * Translators that the EPRT command (as well as other data commands) will no longer be used. An
      * example of this command follows:<br>
      * <br>
-     * 
+     *
      * <pre>
      * EPSV &lt; space &gt; ALL
      * </pre>
-     * 
+     *
      * <br>
      * Upon receipt of an EPSV ALL command, the server MUST reject all data connection setup
      * commands other than EPSV (i.e., EPRT, PORT, PASV, et al.). This use of the EPSV command is
      * further explained in section 4.<br>
-     * 
-     * 
+     *
+     *
      * 229<br>
      * 500, 501, 502, 522, 421, 530<br>
      */
@@ -924,7 +923,7 @@ public enum FtpCommandCode {
     /**
      * Compute CRC on pathname given as argument. Return on control network as 250 "CRC" is CRC of
      * file "pathname"<br>
-     * 
+     *
      * 250<br>
      * 500, 501, 502, 504, 421, 530<br>
      */
@@ -932,7 +931,7 @@ public enum FtpCommandCode {
     /**
      * Compute MD5 on pathname given as argument. Return on control network as 250 "MD5" is MD5 of
      * file "pathname"<br>
-     * 
+     *
      * 250<br>
      * 500, 501, 502, 504, 421, 530<br>
      */
@@ -940,7 +939,7 @@ public enum FtpCommandCode {
     /**
      * Compute SHA-1 on pathname given as argument. Return on control network as 250 "SHA1" is SHA-1
      * of file "pathname"<br>
-     * 
+     *
      * 250<br>
      * 500, 501, 502, 504, 421, 530<br>
      */
@@ -1018,9 +1017,9 @@ public enum FtpCommandCode {
      * AUTH TLS -> 234 -> USER or ([PBSZ 0] PROT P then USER) -> 2xy
      */
     AUTH(org.waarp.ftp.core.command.rfc4217.AUTH.class, null,
-            org.waarp.ftp.core.command.rfc4217.PROT.class,
-            org.waarp.ftp.core.command.rfc4217.PBSZ.class,
-            org.waarp.ftp.core.command.access.USER.class),
+         org.waarp.ftp.core.command.rfc4217.PROT.class,
+         org.waarp.ftp.core.command.rfc4217.PBSZ.class,
+         org.waarp.ftp.core.command.access.USER.class),
     /**
      * Security Association Setup<br>
      * CCC (Control SSL Off)<br>
@@ -1060,8 +1059,8 @@ public enum FtpCommandCode {
     public Class<?>[] nextValids;
 
     private FtpCommandCode(Class<? extends AbstractCommand> command,
-            Class<? extends AbstractCommand> previousValid,
-            Class<?>... nextValids) {
+                           Class<? extends AbstractCommand> previousValid,
+                           Class<?>... nextValids) {
         this.command = command;
         this.previousValid = previousValid;
         this.nextValids = nextValids;
@@ -1070,7 +1069,7 @@ public enum FtpCommandCode {
     /**
      * Get the corresponding AbstractCommand object from the line received from the client
      * associated with the handler
-     * 
+     *
      * @param session
      * @param line
      * @return the AbstractCommand from the line received from the client
@@ -1118,7 +1117,7 @@ public enum FtpCommandCode {
 
     /**
      * True if the command is a Store like operation (APPE, STOR, STOU, ...)
-     * 
+     *
      * @param command
      * @return True if the command is a Store like operation (APPE, STOR, STOU, ...)
      */
@@ -1128,7 +1127,7 @@ public enum FtpCommandCode {
 
     /**
      * True if the command is a Retrieve like operation (RETR, ...)
-     * 
+     *
      * @param command
      * @return True if the command is a Retrieve like operation (RETR, ...)
      */
@@ -1138,7 +1137,7 @@ public enum FtpCommandCode {
 
     /**
      * True if the command is a Retrieve or Store like operation
-     * 
+     *
      * @param command
      * @return True if the command is a Retrieve or Store like operation
      */
@@ -1148,18 +1147,18 @@ public enum FtpCommandCode {
 
     /**
      * True if the command is a List like operation (LIST, NLST, MLSD, MLST, ...)
-     * 
+     *
      * @param command
      * @return True if the command is a List like operation (LIST, NLST, MLSD, MLST, ...)
      */
     public static boolean isListLikeCommand(FtpCommandCode command) {
         return command == LIST || command == NLST || command == MLSD ||
-                command == MLST;
+               command == MLST;
     }
 
     /**
      * True if the command is using a Data connection
-     * 
+     *
      * @param command
      * @return True if the command is using a Data Connection
      */
@@ -1169,35 +1168,35 @@ public enum FtpCommandCode {
 
     /**
      * True if the command is a special operation (QUIT, ABOR, NOOP, STAT, ...)
-     * 
+     *
      * @param command
      * @return True if the command is a special operation (QUIT, ABOR, NOOP, STAT, ...)
      */
     public static boolean isSpecialCommand(FtpCommandCode command) {
         return command == QUIT || command == ABOR || command == NOOP ||
-                command == STAT;
+               command == STAT;
     }
 
     /**
      * True if the command is Ssl related (AUTH, PBSZ, PROT, USER, PASS, ACCT)
-     * 
+     *
      * @param command
      * @return True if the command is Ssl related (AUTH, PBSZ, PROT, USER, PASS, ACCT)
      */
     public static boolean isSslOrAuthCommand(FtpCommandCode command) {
         return command == AUTH || command == PBSZ || command == PROT
-                || command == AUTH || command == PASS || command == ACCT;
+               || command == AUTH || command == PASS || command == ACCT;
     }
 
     /**
      * True if the command is an extension operation (XMD5, XCRC, XSHA1, ...)
-     * 
+     *
      * @param command
      * @return True if the command is an extension operation (XMD5, XCRC, XSHA1, ...)
      */
     public static boolean isExtensionCommand(FtpCommandCode command) {
         return command == XMD5 || command == XCRC || command == XSHA1 ||
-                command == INTERNALSHUTDOWN || command == LIMITBANDWIDTH;
+               command == INTERNALSHUTDOWN || command == LIMITBANDWIDTH;
     }
 
     @Override

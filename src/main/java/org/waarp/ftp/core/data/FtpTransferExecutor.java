@@ -1,23 +1,20 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package org.waarp.ftp.core.data;
-
-import java.util.List;
 
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.logging.WaarpLogger;
@@ -27,11 +24,13 @@ import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.ftp.core.exception.FtpNoFileException;
 import org.waarp.ftp.core.session.FtpSession;
 
+import java.util.List;
+
 /**
  * Class that implements the execution of the Transfer itself.
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 class FtpTransferExecutor implements Runnable {
     /**
@@ -52,7 +51,7 @@ class FtpTransferExecutor implements Runnable {
 
     /**
      * Create an executor and launch it
-     * 
+     *
      * @param session
      * @param executeTransfer
      */
@@ -61,7 +60,7 @@ class FtpTransferExecutor implements Runnable {
         this.executeTransfer = executeTransfer;
         if (this.executeTransfer == null) {
             this.session.getDataConn().getFtpTransferControl()
-                    .setEndOfTransfer();
+                        .setEndOfTransfer();
             logger.error("No Execution to do");
             return;
         }
@@ -85,7 +84,7 @@ class FtpTransferExecutor implements Runnable {
 
     /**
      * Run the next command or wait for the next
-     * 
+     *
      * @throws InterruptedException
      */
     private void runNextCommand() throws InterruptedException {
@@ -95,12 +94,12 @@ class FtpTransferExecutor implements Runnable {
             // Store set end
             try {
                 session.getDataConn().getFtpTransferControl()
-                        .setEndOfTransfer();
+                       .setEndOfTransfer();
             } catch (NullPointerException e) {
                 // ignore, due probably to an already clean session
             }
         } else if (FtpCommandCode.isListLikeCommand(executeTransfer
-                .getCommand())) {
+                                                            .getCommand())) {
             // No wait for Command since the answer is already there
             List<String> list = executeTransfer.getInfo();
             StringBuilder builder = new StringBuilder();
@@ -122,7 +121,7 @@ class FtpTransferExecutor implements Runnable {
             // must explicitly set the end and no wait
             session.getDataConn().getFtpTransferControl().setEndOfTransfer();
         } else if (FtpCommandCode.isRetrLikeCommand(executeTransfer
-                .getCommand())) {
+                                                            .getCommand())) {
             // The command must be launched
             try {
                 executeTransfer.getFtpFile().trueRetrieve();
@@ -130,7 +129,7 @@ class FtpTransferExecutor implements Runnable {
                 // an error occurs
                 logger.debug(e);
                 session.getDataConn().getFtpTransferControl()
-                        .setEndOfTransfer();
+                       .setEndOfTransfer();
             }
             logger.debug("wait for end of command");
             waitForCommand();
@@ -138,7 +137,7 @@ class FtpTransferExecutor implements Runnable {
             // RETR set end
             try {
                 session.getDataConn().getFtpTransferControl()
-                        .setEndOfTransfer();
+                       .setEndOfTransfer();
             } catch (NullPointerException e) {
                 // ignore, due probably to an already clean session
             }
@@ -150,9 +149,9 @@ class FtpTransferExecutor implements Runnable {
 
     /**
      * Wait for the command to finish
-     * 
+     *
      * @throws InterruptedException
-     * 
+     *
      */
     private void waitForCommand() throws InterruptedException {
         session.getDataConn().getFtpTransferControl().waitForEndOfTransfer();

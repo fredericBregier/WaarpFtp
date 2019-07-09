@@ -1,17 +1,16 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -30,9 +29,9 @@ import org.waarp.ftp.simpleimpl.data.FileSystemBasedDataBusinessHandler;
 /**
  * Example of FTP Server using simple authentication (XML FileInterface based), and standard
  * Directory and FileInterface implementation (Filesystem based).
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public class SimpleGatewaySslFtpServer {
     /**
@@ -42,13 +41,13 @@ public class SimpleGatewaySslFtpServer {
 
     /**
      * Take 2 simple XML files as configuration.
-     * 
+     *
      * @param args
      */
     public static void main(String[] args) {
         if (args.length != 3) {
             System.err.println("Usage: " +
-                    SimpleGatewaySslFtpServer.class.getName() + " <config-file> <ssl-config-file> SSL|AUTH");
+                               SimpleGatewaySslFtpServer.class.getName() + " <config-file> <ssl-config-file> SSL|AUTH");
             return;
         }
         WaarpLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));
@@ -85,10 +84,10 @@ public class SimpleGatewaySslFtpServer {
             configuration.serverStartup();
         } catch (FtpNoConnectionException e) {
             logger.error("FTP not started: Mode "
-                    + (configuration.getFtpInternalConfiguration().isUsingNativeSsl() ? "SSL" : "AUTH"), e);
+                         + (configuration.getFtpInternalConfiguration().isUsingNativeSsl()? "SSL" : "AUTH"), e);
         }
         logger.info("FTP started: Mode "
-                + (configuration.getFtpInternalConfiguration().isUsingNativeSsl() ? "SSL" : "AUTH"));
+                    + (configuration.getFtpInternalConfiguration().isUsingNativeSsl()? "SSL" : "AUTH"));
     }
 
 }

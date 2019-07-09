@@ -1,44 +1,42 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package org.waarp.ftp.core.data.handler;
-
-import java.nio.charset.Charset;
-import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
-
 import org.waarp.common.exception.InvalidArgumentException;
 import org.waarp.common.file.DataBlock;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferSubType;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferType;
+
+import java.nio.charset.Charset;
+import java.util.List;
 
 /**
  * Second CODEC :<br>
  * - encode/decode : takes a {@link DataBlock} and transforms it to a new {@link DataBlock} according
  * to the types<br>
  * Force ASCII, EBCDIC or IMAGE (with NON PRINT). LOCAL and other subtypes are not implemented.
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 @Sharable
 class FtpDataTypeCodec extends MessageToMessageCodec<DataBlock, DataBlock> {
@@ -173,7 +171,7 @@ class FtpDataTypeCodec extends MessageToMessageCodec<DataBlock, DataBlock> {
 
     /**
      * Set the charset
-     * 
+     *
      * @param charset
      */
     private void setCharset(Charset charset) {
@@ -198,11 +196,11 @@ class FtpDataTypeCodec extends MessageToMessageCodec<DataBlock, DataBlock> {
         }
         // Type unimplemented
         throw new InvalidArgumentException("Type unimplemented in " +
-                this.getClass().getName() + " codec " + type.name());
+                                           this.getClass().getName() + " codec " + type.name());
     }
 
     /**
-     * 
+     *
      * @param ByteBuf
      * @return the ByteBuf
      * @throws Exception
@@ -210,7 +208,7 @@ class FtpDataTypeCodec extends MessageToMessageCodec<DataBlock, DataBlock> {
     protected ByteBuf decode(ByteBuf ByteBuf)
             throws Exception {
         return Unpooled.copiedBuffer(ByteBuf
-                .toString(type.charset), charsetName);
+                                             .toString(type.charset), charsetName);
     }
 
     @Override
@@ -227,11 +225,11 @@ class FtpDataTypeCodec extends MessageToMessageCodec<DataBlock, DataBlock> {
         }
         // Type unimplemented
         throw new InvalidArgumentException("Type unimplemented in " +
-                this.getClass().getName() + " codec " + type.name());
+                                           this.getClass().getName() + " codec " + type.name());
     }
 
     /**
-     * 
+     *
      * @param ByteBuf
      * @return the encoded buffer
      * @throws Exception

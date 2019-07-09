@@ -1,24 +1,20 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package org.waarp.ftp.core.command.parameter;
-
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.Reply425Exception;
@@ -30,11 +26,14 @@ import org.waarp.ftp.core.config.FtpInternalConfiguration;
 import org.waarp.ftp.core.data.FtpDataAsyncConn;
 import org.waarp.ftp.core.utils.FtpChannelUtils;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+
 /**
  * PASV command
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public class PASV extends AbstractCommand {
     /**
@@ -60,9 +59,9 @@ public class PASV extends AbstractCommand {
             if (getSession().getDataConn().isPassiveMode()) {
                 // Previous mode was Passive so remove the current configuration
                 InetSocketAddress local = getSession().getDataConn()
-                        .getLocalAddress();
+                                                      .getLocalAddress();
                 InetAddress remote = getSession().getDataConn()
-                        .getRemoteAddress().getAddress();
+                                                 .getRemoteAddress().getAddress();
                 getConfiguration().delFtpSession(remote, local);
             }
             logger.info("PASV: set Passive Port {}", newport);
@@ -76,7 +75,7 @@ public class PASV extends AbstractCommand {
                 }
             } catch (Reply425Exception e) {
                 logger.warn("Pasv refused at try: " + i +
-                        " with port:  since {}" + newport, e.getMessage());
+                            " with port:  since {}" + newport, e.getMessage());
             }
         }
         if (!isInit) {
@@ -90,16 +89,16 @@ public class PASV extends AbstractCommand {
             address = local.getAddress().getHostAddress();
         }
         String slocal = "Entering Passive Mode (" +
-                FtpChannelUtils.getAddress(address, servPort) + ")";
+                        FtpChannelUtils.getAddress(address, servPort) + ")";
         InetAddress remote = getSession().getDataConn().getRemoteAddress()
-                .getAddress();
+                                         .getAddress();
         // Add the current FtpSession into the reference of session since the
         // client will open the connection
         getConfiguration().setNewFtpSession(remote, local, getSession());
         // prepare the validation of the next connection
         getSession().getDataConn().getFtpTransferControl().resetWaitForOpenedDataChannel();
         getSession().setReplyCode(ReplyCode.REPLY_227_ENTERING_PASSIVE_MODE,
-                slocal);
+                                  slocal);
         logger.info("PASV: answer ready on {}", slocal);
     }
 

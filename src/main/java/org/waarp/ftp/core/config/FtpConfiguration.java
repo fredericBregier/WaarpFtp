@@ -1,32 +1,23 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package org.waarp.ftp.core.config;
 
-import java.io.File;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 import io.netty.channel.Channel;
 import io.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
-
 import org.waarp.common.file.FileParameterInterface;
 import org.waarp.common.utility.WaarpShutdownHook.ShutdownConfiguration;
 import org.waarp.ftp.core.control.BusinessHandler;
@@ -35,40 +26,87 @@ import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.ftp.core.exception.FtpUnknownFieldException;
 import org.waarp.ftp.core.session.FtpSession;
 
+import java.io.File;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * Abstract class for configuration
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public abstract class FtpConfiguration {
     // FTP Configuration: Externals
     /**
+     * PASSWORD for SHUTDOWN
+     */
+    private static final String FTP_PASSWORD = "FTP_PASSWORD";
+    /**
      * Default session limit 64Mbit, so up to 8 full simultaneous clients
      */
     static long DEFAULT_SESSION_LIMIT = 0x800000L;
-
     /**
      * Default global limit 512Mbit
      */
     static long DEFAULT_GLOBAL_LIMIT = 0x4000000L;
-
     /**
      * Nb of milliseconds after pending data transfer is in timeout
      */
     private static long DATATIMEOUTCON = 5000;
-
-    /**
-     * PASSWORD for SHUTDOWN
-     */
-    private static final String FTP_PASSWORD = "FTP_PASSWORD";
 
     // END OF STATIC VALUES
     /**
      * Internal configuration
      */
     private final FtpInternalConfiguration internalConfiguration;
-
+    /**
+     * Associated FileParameterInterface
+     */
+    private final FileParameterInterface fileParameter;
+    /**
+     * General Configuration Object
+     */
+    private final HashMap<String, Object> properties = new HashMap<String, Object>();
+    /**
+     * Use by ShutdownHook
+     */
+    private final ShutdownConfiguration shutdownConfiguration = new ShutdownConfiguration();
+    /**
+     * Limit in Write byte/s to apply globally to the FTP Server
+     */
+    protected long serverGlobalWriteLimit = DEFAULT_GLOBAL_LIMIT;
+    /**
+     * Limit in Read byte/s to apply globally to the FTP Server
+     */
+    protected long serverGlobalReadLimit = DEFAULT_GLOBAL_LIMIT;
+    /**
+     * Limit in Write byte/s to apply by session to the FTP Server
+     */
+    protected long serverChannelWriteLimit = DEFAULT_SESSION_LIMIT;
+    /**
+     * Limit in Read byte/s to apply by session to the FTP Server
+     */
+    protected long serverChannelReadLimit = DEFAULT_SESSION_LIMIT;
+    /**
+     * Delay in ms between two checks
+     */
+    protected long delayLimit = 1000;
+    /**
+     * Which class owns this configuration
+     */
+    Class<?> fromClass = null;
+    /**
+     * Which class will be used for DataBusinessHandler
+     */
+    Class<? extends DataBusinessHandler> dataBusinessHandler = null;
+    /**
+     * Which class will be used for BusinessHandler
+     */
+    Class<? extends BusinessHandler> businessHandler = null;
     /**
      * SERVER PORT
      */
@@ -77,113 +115,49 @@ public abstract class FtpConfiguration {
      * Default Address if any
      */
     private String SERVER_ADDRESS = null;
-
     /**
      * Base Directory
      */
     private String BASE_DIRECTORY = null;
-
-    /**
-     * Associated FileParameterInterface
-     */
-    private final FileParameterInterface fileParameter;
-
     /**
      * True if the service is going to shutdown
      */
     private volatile boolean isShutdown = false;
-
     /**
      * Default number of threads in pool for Server. The default value is for client for Executor in
      * the Pipeline for Business logic. Server will change this value on startup if not set.
      * Default 0 means in proportion of real core number.
      */
     private int SERVER_THREAD = 0;
-
     /**
      * Default number of threads in pool for Client part.
      */
     private int CLIENT_THREAD = 80;
-
-    /**
-     * Which class owns this configuration
-     */
-    Class<?> fromClass = null;
-
-    /**
-     * Which class will be used for DataBusinessHandler
-     */
-    Class<? extends DataBusinessHandler> dataBusinessHandler = null;
-
-    /**
-     * Which class will be used for BusinessHandler
-     */
-    Class<? extends BusinessHandler> businessHandler = null;
-
     /**
      * Internal Lock
      */
     private ReentrantLock lock = new ReentrantLock();
-
     /**
      * Nb of milliseconds after connection is in timeout
      */
     private long TIMEOUTCON = 30000;
-
     /**
      * Size by default of block size for receive/sending files. Should be a multiple of 8192
      * (maximum = 64K due to block limitation to 2 bytes)
      */
     private int BLOCKSIZE = 0x10000; // 64K
-
-    /**
-     * Limit in Write byte/s to apply globally to the FTP Server
-     */
-    protected long serverGlobalWriteLimit = DEFAULT_GLOBAL_LIMIT;
-
-    /**
-     * Limit in Read byte/s to apply globally to the FTP Server
-     */
-    protected long serverGlobalReadLimit = DEFAULT_GLOBAL_LIMIT;
-
-    /**
-     * Limit in Write byte/s to apply by session to the FTP Server
-     */
-    protected long serverChannelWriteLimit = DEFAULT_SESSION_LIMIT;
-
-    /**
-     * Limit in Read byte/s to apply by session to the FTP Server
-     */
-    protected long serverChannelReadLimit = DEFAULT_SESSION_LIMIT;
-
-    /**
-     * Delay in ms between two checks
-     */
-    protected long delayLimit = 1000;
-
     /**
      * Should the file be deleted when the transfer is aborted on STOR like commands
      */
     private boolean deleteOnAbort = false;
-
     /**
      * Max global memory limit: default is 4GB
      */
     private long maxGlobalMemory = 0x100000000L;
 
     /**
-     * General Configuration Object
-     */
-    private final HashMap<String, Object> properties = new HashMap<String, Object>();
-
-    /**
-     * Use by ShutdownHook
-     */
-    private final ShutdownConfiguration shutdownConfiguration = new ShutdownConfiguration();
-
-    /**
      * Simple constructor
-     * 
+     *
      * @param classtype
      *            Owner
      * @param businessHandler
@@ -194,9 +168,9 @@ public abstract class FtpConfiguration {
      *            the FileParameterInterface to used
      */
     public FtpConfiguration(Class<?> classtype,
-            Class<? extends BusinessHandler> businessHandler,
-            Class<? extends DataBusinessHandler> dataBusinessHandler,
-            FileParameterInterface fileParameter) {
+                            Class<? extends BusinessHandler> businessHandler,
+                            Class<? extends DataBusinessHandler> dataBusinessHandler,
+                            FileParameterInterface fileParameter) {
         fromClass = classtype;
         this.dataBusinessHandler = dataBusinessHandler;
         this.businessHandler = businessHandler;
@@ -205,7 +179,21 @@ public abstract class FtpConfiguration {
     }
 
     /**
-     * 
+     * @return the dATATIMEOUTCON
+     */
+    public static long getDATATIMEOUTCON() {
+        return DATATIMEOUTCON;
+    }
+
+    /**
+     * @param dATATIMEOUTCON the dATATIMEOUTCON to set
+     */
+    public static void setDATATIMEOUTCON(long dATATIMEOUTCON) {
+        DATATIMEOUTCON = dATATIMEOUTCON;
+    }
+
+    /**
+     *
      * @param key
      * @return The String property associated to the key
      * @throws FtpUnknownFieldException
@@ -219,7 +207,7 @@ public abstract class FtpConfiguration {
     }
 
     /**
-     * 
+     *
      * @param key
      * @return The Integer property associated to the key
      * @throws FtpUnknownFieldException
@@ -233,7 +221,7 @@ public abstract class FtpConfiguration {
     }
 
     /**
-     * 
+     *
      * @param key
      * @return The File associated to the key
      * @throws FtpUnknownFieldException
@@ -247,7 +235,7 @@ public abstract class FtpConfiguration {
     }
 
     /**
-     * 
+     *
      * @param key
      * @return The Object property associated to the key
      * @throws FtpUnknownFieldException
@@ -261,7 +249,7 @@ public abstract class FtpConfiguration {
     }
 
     /**
-     * 
+     *
      * @return the TCP Port to listen in the Ftp Server
      */
     public int getServerPort() {
@@ -269,7 +257,15 @@ public abstract class FtpConfiguration {
     }
 
     /**
-     * 
+     * @param port
+     *            the new port
+     */
+    public void setServerPort(int port) {
+        SERVER_PORT = port;
+    }
+
+    /**
+     *
      * @return the Address of the Ftp Server if any (may be null)
      */
     public String getServerAddress() {
@@ -277,7 +273,15 @@ public abstract class FtpConfiguration {
     }
 
     /**
-     * 
+     * @param address
+     *            the address to use while answering for address
+     */
+    public void setServerAddress(String address) {
+        SERVER_ADDRESS = address;
+    }
+
+    /**
+     *
      * @return the limit in Write byte/s to apply globally to the Ftp Server
      */
     public long getServerGlobalWriteLimit() {
@@ -285,7 +289,7 @@ public abstract class FtpConfiguration {
     }
 
     /**
-     * 
+     *
      * @return the limit in Write byte/s to apply for each session to the Ftp Server
      */
     public long getServerChannelWriteLimit() {
@@ -293,7 +297,7 @@ public abstract class FtpConfiguration {
     }
 
     /**
-     * 
+     *
      * @return the limit in Read byte/s to apply globally to the Ftp Server
      */
     public long getServerGlobalReadLimit() {
@@ -301,7 +305,7 @@ public abstract class FtpConfiguration {
     }
 
     /**
-     * 
+     *
      * @return the limit in Read byte/s to apply for each session to the Ftp Server
      */
     public long getServerChannelReadLimit() {
@@ -317,7 +321,7 @@ public abstract class FtpConfiguration {
 
     /**
      * Check the password for Shutdown
-     * 
+     *
      * @param password
      * @return True if the password is OK
      */
@@ -333,69 +337,17 @@ public abstract class FtpConfiguration {
 
     /**
      * Return the next available port for passive connections.
-     * 
+     *
      * @return the next available Port for Passive connections
      */
     public abstract int getNextRangePort();
 
     /**
-     * 
+     *
      * @return the Base Directory of this Ftp Server
      */
     public String getBaseDirectory() {
         return BASE_DIRECTORY;
-    }
-
-    /**
-     * 
-     * @param key
-     * @param s
-     */
-    public void setStringProperty(String key, String s) {
-        properties.put(key, s);
-    }
-
-    /**
-     * 
-     * @param key
-     * @param i
-     */
-    public void setIntProperty(String key, int i) {
-        properties.put(key, Integer.valueOf(i));
-    }
-
-    /**
-     * 
-     * @param key
-     * @param f
-     */
-    public void setFileProperty(String key, File f) {
-        properties.put(key, f);
-    }
-
-    /**
-     * 
-     * @param key
-     * @param o
-     */
-    public void setProperty(String key, Object o) {
-        properties.put(key, o);
-    }
-
-    /**
-     * @param port
-     *            the new port
-     */
-    public void setServerPort(int port) {
-        SERVER_PORT = port;
-    }
-
-    /**
-     * @param address
-     *            the address to use while answering for address
-     */
-    public void setServerAddress(String address) {
-        SERVER_ADDRESS = address;
     }
 
     /**
@@ -404,6 +356,42 @@ public abstract class FtpConfiguration {
      */
     public void setBaseDirectory(String dir) {
         BASE_DIRECTORY = dir;
+    }
+
+    /**
+     *
+     * @param key
+     * @param s
+     */
+    public void setStringProperty(String key, String s) {
+        properties.put(key, s);
+    }
+
+    /**
+     *
+     * @param key
+     * @param i
+     */
+    public void setIntProperty(String key, int i) {
+        properties.put(key, Integer.valueOf(i));
+    }
+
+    /**
+     *
+     * @param key
+     * @param f
+     */
+    public void setFileProperty(String key, File f) {
+        properties.put(key, f);
+    }
+
+    /**
+     *
+     * @param key
+     * @param o
+     */
+    public void setProperty(String key, Object o) {
+        properties.put(key, o);
     }
 
     /**
@@ -423,9 +411,9 @@ public abstract class FtpConfiguration {
 
     /**
      * Init internal configuration
-     * 
+     *
      * @throws FtpNoConnectionException
-     * 
+     *
      */
     public void serverStartup() throws FtpNoConnectionException {
         internalConfiguration.serverStartup();
@@ -434,17 +422,17 @@ public abstract class FtpConfiguration {
     /**
      * Reset the global monitor for bandwidth limitation and change future channel monitors with
      * values divided by 10 (channel = global / 10)
-     * 
+     *
      * @param writeLimit
      * @param readLimit
      */
     public void changeNetworkLimit(long writeLimit, long readLimit) {
-        long newWriteLimit = writeLimit > 1024 ? writeLimit
+        long newWriteLimit = writeLimit > 1024? writeLimit
                 : serverGlobalWriteLimit;
         if (writeLimit <= 0) {
             newWriteLimit = 0;
         }
-        long newReadLimit = readLimit > 1024 ? readLimit : serverGlobalReadLimit;
+        long newReadLimit = readLimit > 1024? readLimit : serverGlobalReadLimit;
         if (readLimit <= 0) {
             newReadLimit = 0;
         }
@@ -455,14 +443,14 @@ public abstract class FtpConfiguration {
         serverChannelWriteLimit = newWriteLimit / 10;
         if (fgts instanceof GlobalChannelTrafficShapingHandler) {
             ((GlobalChannelTrafficShapingHandler) fgts)
-                .configureChannel(serverChannelWriteLimit, serverChannelReadLimit);
+                    .configureChannel(serverChannelWriteLimit, serverChannelReadLimit);
         }
     }
 
     /**
      * Compute number of threads for both client and server from the real number of available
      * processors (double + 1) if the value is less than 64 threads.
-     * 
+     *
      */
     public void computeNbThreads() {
         int nb = Runtime.getRuntime().availableProcessors() * 2 + 1;
@@ -478,7 +466,7 @@ public abstract class FtpConfiguration {
     }
 
     /**
-     * 
+     *
      * @return the lock on configuration
      */
     public Lock getLock() {
@@ -500,7 +488,7 @@ public abstract class FtpConfiguration {
     }
 
     /**
-     * 
+     *
      * @return the FtpInternalConfiguration
      */
     public FtpInternalConfiguration getFtpInternalConfiguration() {
@@ -509,19 +497,19 @@ public abstract class FtpConfiguration {
 
     /**
      * Add a session from a couple of addresses
-     * 
+     *
      * @param ipOnly
      * @param fullIp
      * @param session
      */
     public void setNewFtpSession(InetAddress ipOnly, InetSocketAddress fullIp,
-            FtpSession session) {
+                                 FtpSession session) {
         internalConfiguration.setNewFtpSession(ipOnly, fullIp, session);
     }
 
     /**
      * Return and remove the FtpSession
-     * 
+     *
      * @param channel
      * @param active
      * @return the FtpSession if it exists associated to this channel
@@ -532,7 +520,7 @@ public abstract class FtpConfiguration {
 
     /**
      * Return the FtpSession
-     * 
+     *
      * @param channel
      * @param active
      * @return the FtpSession if it exists associated to this channel
@@ -543,7 +531,7 @@ public abstract class FtpConfiguration {
 
     /**
      * Remove the FtpSession
-     * 
+     *
      * @param ipOnly
      * @param fullIp
      */
@@ -553,7 +541,7 @@ public abstract class FtpConfiguration {
 
     /**
      * Test if the couple of addresses is already in the context
-     * 
+     *
      * @param ipOnly
      * @param fullIp
      * @return True if the couple is present
@@ -668,20 +656,6 @@ public abstract class FtpConfiguration {
      */
     public void setDeleteOnAbort(boolean deleteOnAbort) {
         this.deleteOnAbort = deleteOnAbort;
-    }
-
-    /**
-     * @return the dATATIMEOUTCON
-     */
-    public static long getDATATIMEOUTCON() {
-        return DATATIMEOUTCON;
-    }
-
-    /**
-     * @param dATATIMEOUTCON the dATATIMEOUTCON to set
-     */
-    public static void setDATATIMEOUTCON(long dATATIMEOUTCON) {
-        DATATIMEOUTCON = dATATIMEOUTCON;
     }
 
     /**

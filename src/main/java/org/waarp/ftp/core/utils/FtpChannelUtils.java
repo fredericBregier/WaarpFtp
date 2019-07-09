@@ -1,21 +1,29 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package org.waarp.ftp.core.utils;
+
+import ch.qos.logback.classic.LoggerContext;
+import io.netty.channel.Channel;
+import org.slf4j.LoggerFactory;
+import org.waarp.common.crypto.ssl.WaarpSslUtility;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
+import org.waarp.common.logging.WaarpSlf4JLoggerFactory;
+import org.waarp.ftp.core.config.FtpConfiguration;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -25,22 +33,11 @@ import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.Timer;
 
-import io.netty.channel.Channel;
-
-import org.slf4j.LoggerFactory;
-import org.waarp.common.crypto.ssl.WaarpSslUtility;
-import org.waarp.common.logging.WaarpLogger;
-import org.waarp.common.logging.WaarpLoggerFactory;
-import org.waarp.common.logging.WaarpSlf4JLoggerFactory;
-import org.waarp.ftp.core.config.FtpConfiguration;
-
-import ch.qos.logback.classic.LoggerContext;
-
 /**
  * Some useful functions related to Channel of Netty
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public class FtpChannelUtils implements Runnable {
     /**
@@ -48,10 +45,18 @@ public class FtpChannelUtils implements Runnable {
      */
     private static final WaarpLogger logger = WaarpLoggerFactory
             .getLogger(FtpChannelUtils.class);
+    /**
+     * Used to run Exit command
+     */
+    private FtpConfiguration configuration;
+
+    public FtpChannelUtils(FtpConfiguration configuration) {
+        this.configuration = configuration;
+    }
 
     /**
      * Get the Remote InetAddress
-     * 
+     *
      * @param channel
      * @return the remote InetAddress
      */
@@ -65,7 +70,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Get the Local InetAddress
-     * 
+     *
      * @param channel
      * @return the local InetAddress
      */
@@ -76,7 +81,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Get the Remote InetSocketAddress
-     * 
+     *
      * @param channel
      * @return the remote InetSocketAddress
      */
@@ -86,7 +91,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Get the Local InetSocketAddress
-     * 
+     *
      * @param channel
      * @return the local InetSocketAddress
      */
@@ -96,7 +101,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Get the InetSocketAddress corresponding to the FTP format of address
-     * 
+     *
      * @param arg
      * @return the InetSocketAddress or null if an error occurs
      */
@@ -132,19 +137,19 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Return the Address in the format compatible with FTP argument
-     * 
+     *
      * @param address
      * @param port
      * @return the String representation of the address
      */
     public static String getAddress(String address, int port) {
         return address.replace('.', ',') + ',' +
-                (port >> 8) + ',' + (port & 0xFF);
+               (port >> 8) + ',' + (port & 0xFF);
     }
 
     /**
      * Return the Address in the format compatible with FTP argument
-     * 
+     *
      * @param address
      * @return the String representation of the address
      */
@@ -152,12 +157,12 @@ public class FtpChannelUtils implements Runnable {
         InetAddress servAddr = address.getAddress();
         int servPort = address.getPort();
         return servAddr.getHostAddress().replace('.', ',') + ',' +
-                (servPort >> 8) + ',' + (servPort & 0xFF);
+               (servPort >> 8) + ',' + (servPort & 0xFF);
     }
 
     /**
      * Get the (RFC2428) InetSocketAddress corresponding to the FTP format of address (RFC2428)
-     * 
+     *
      * @param arg
      * @return the InetSocketAddress or null if an error occurs
      */
@@ -221,7 +226,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Return the (RFC2428) Address in the format compatible with FTP (RFC2428)
-     * 
+     *
      * @param address
      * @return the String representation of the address
      */
@@ -242,57 +247,57 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Terminate all registered command channels
-     * 
+     *
      * @param configuration
      * @return the number of previously registered command channels
      */
     static int terminateCommandChannels(final FtpConfiguration configuration) {
         int result = configuration.getFtpInternalConfiguration()
-                .getCommandChannelGroup().size();
+                                  .getCommandChannelGroup().size();
         configuration.getFtpInternalConfiguration().getCommandChannelGroup()
-                .close();
+                     .close();
         return result;
     }
 
     /**
      * Terminate all registered data channels
-     * 
+     *
      * @param configuration
      * @return the number of previously registered data channels
      */
     private static int terminateDataChannels(final FtpConfiguration configuration) {
         int result = configuration.getFtpInternalConfiguration()
-                .getDataChannelGroup().size();
+                                  .getDataChannelGroup().size();
         configuration.getFtpInternalConfiguration().getDataChannelGroup()
-                .close();
+                     .close();
         return result;
     }
 
     /**
      * Return the current number of command connections
-     * 
+     *
      * @param configuration
      * @return the current number of command connections
      */
     public static int nbCommandChannels(FtpConfiguration configuration) {
         return configuration.getFtpInternalConfiguration()
-                .getCommandChannelGroup().size();
+                            .getCommandChannelGroup().size();
     }
 
     /**
      * Return the current number of data connections
-     * 
+     *
      * @param configuration
      * @return the current number of data connections
      */
     public static int nbDataChannels(FtpConfiguration configuration) {
         return configuration.getFtpInternalConfiguration()
-                .getDataChannelGroup().size();
+                            .getDataChannelGroup().size();
     }
 
     /**
      * Return the number of still positive command connections
-     * 
+     *
      * @param configuration
      * @return the number of positive command connections
      */
@@ -322,7 +327,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Exit global ChannelFactory
-     * 
+     *
      * @param configuration
      */
     protected static void exit(FtpConfiguration configuration) {
@@ -339,7 +344,7 @@ public class FtpChannelUtils implements Runnable {
         timerTask.setConfiguration(configuration);
         timer.schedule(timerTask, configuration.getTIMEOUTCON() / 4);
         configuration.getFtpInternalConfiguration()
-                .getGlobalTrafficShapingHandler().release();
+                     .getGlobalTrafficShapingHandler().release();
         configuration.releaseResources();
         logger.info("Exit Shutdown Data");
         terminateDataChannels(configuration);
@@ -348,7 +353,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * This function is the top function to be called when the server is to be shutdown.
-     * 
+     *
      * @param configuration
      */
     public static void teminateServer(FtpConfiguration configuration) {
@@ -358,42 +363,28 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Add a command channel into the list
-     * 
+     *
      * @param channel
      * @param configuration
      */
     public static void addCommandChannel(Channel channel,
-            FtpConfiguration configuration) {
+                                         FtpConfiguration configuration) {
         // logger.debug("Add Command Channel {}", channel);
         configuration.getFtpInternalConfiguration().getCommandChannelGroup()
-                .add(channel);
+                     .add(channel);
     }
 
     /**
      * Add a data channel into the list
-     * 
+     *
      * @param channel
      * @param configuration
      */
     public static void addDataChannel(Channel channel,
-            FtpConfiguration configuration) {
+                                      FtpConfiguration configuration) {
         // logger.debug("Add Data Channel {}", channel);
         configuration.getFtpInternalConfiguration().getDataChannelGroup().add(
                 channel);
-    }
-
-    /**
-     * Used to run Exit command
-     */
-    private FtpConfiguration configuration;
-
-    public FtpChannelUtils(FtpConfiguration configuration) {
-        this.configuration = configuration;
-    }
-
-    @Override
-    public void run() {
-        exit(configuration);
     }
 
     public static void stopLogger() {
@@ -401,6 +392,11 @@ public class FtpChannelUtils implements Runnable {
             LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
             lc.stop();
         }
+    }
+
+    @Override
+    public void run() {
+        exit(configuration);
     }
 
 }

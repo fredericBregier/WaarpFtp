@@ -1,17 +1,16 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -27,9 +26,9 @@ import org.waarp.ftp.core.command.FtpCommandCode;
 
 /**
  * PROT command accepting only C or P argument
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public class PROT extends AbstractCommand {
 
@@ -47,23 +46,23 @@ public class PROT extends AbstractCommand {
         String[] types = getArgs();
         if (types[0].equalsIgnoreCase("P")) {
             if (getSession().isDataSsl()
-                    && getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
+                && getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
                 // Already SSL
                 throw new Reply503Exception("Data already using SSL / TLS");
             }
             // Data will have SSL
             getSession().setDataSsl(true);
             getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
-                    null);
+                                      null);
         } else if (types[0].equalsIgnoreCase("C")
-                && !getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
+                   && !getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
             if (!getSession().isDataSsl()) {
                 // Not in SSL
                 throw new Reply503Exception("Data already not using SSL / TLS");
             }
             getSession().setDataSsl(false);
             getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
-                    null);
+                                      null);
         } else if (!getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
             throw new Reply503Exception("Data is using SSL / TLS and cannot be removed due to Implicit mode");
         } else {

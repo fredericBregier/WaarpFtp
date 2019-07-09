@@ -1,17 +1,16 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -35,9 +34,9 @@ import org.waarp.ftp.simpleimpl.file.FileBasedDir;
 /**
  * BusinessHandler implementation that allows pre and post actions on any operations and
  * specifically on transfer operations
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public class SimpleBusinessHandler extends BusinessHandler {
     /**
@@ -111,8 +110,10 @@ public class SimpleBusinessHandler extends BusinessHandler {
     @Override
     public String getHelpMessage(String arg) {
         return "This FTP server is only intend as a Gateway.\n"
-                + "This FTP server refers to RFC 959, 775, 2389, 2428, 3659, 4217 and supports XCRC, XMD5 and XSHA1 commands.\n"
-                + "XCRC, XMD5 and XSHA1 take a simple filename as argument and return \"250 digest-value is the digest of filename\".";
+               +
+               "This FTP server refers to RFC 959, 775, 2389, 2428, 3659, 4217 and supports XCRC, XMD5 and XSHA1 commands.\n"
+               +
+               "XCRC, XMD5 and XSHA1 take a simple filename as argument and return \"250 digest-value is the digest of filename\".";
     }
 
     @Override
@@ -129,7 +130,7 @@ public class SimpleBusinessHandler extends BusinessHandler {
     public String getOptsMessage(String[] args) throws CommandAbstractException {
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase(FtpCommandCode.MLST.name()) ||
-                    args[0].equalsIgnoreCase(FtpCommandCode.MLSD.name())) {
+                args[0].equalsIgnoreCase(FtpCommandCode.MLSD.name())) {
                 return getMLSxOptsMessage(args);
             }
             throw new Reply502Exception("OPTS not implemented for " + args[0]);
@@ -139,7 +140,7 @@ public class SimpleBusinessHandler extends BusinessHandler {
 
     @Override
     public AbstractCommand getSpecializedSiteCommand(FtpSession session,
-            String line) {
+                                                     String line) {
         return null;
     }
 
@@ -148,19 +149,19 @@ public class SimpleBusinessHandler extends BusinessHandler {
             throws CommandAbstractException {
         if (transfer.getCommand() == FtpCommandCode.APPE) {
             logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
-                    transfer.getCommand(), transfer.getPath());
+                        transfer.getCommand(), transfer.getPath());
         } else if (transfer.getCommand() == FtpCommandCode.RETR) {
             logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
-                    transfer.getCommand(), transfer.getPath());
+                        transfer.getCommand(), transfer.getPath());
         } else if (transfer.getCommand() == FtpCommandCode.STOR) {
             logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
-                    transfer.getCommand(), transfer.getPath());
+                        transfer.getCommand(), transfer.getPath());
         } else if (transfer.getCommand() == FtpCommandCode.STOU) {
             logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
-                    transfer.getCommand(), transfer.getPath());
+                        transfer.getCommand(), transfer.getPath());
         } else {
             logger.warn("GBBH: Transfer unknown: {} " + transfer.getStatus() +
-                    " {}", transfer.getCommand(), transfer.getPath());
+                        " {}", transfer.getCommand(), transfer.getPath());
             // Nothing to do
         }
     }

@@ -1,17 +1,16 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -32,9 +31,9 @@ import org.waarp.ftp.core.command.internal.IncorrectCommand;
 /**
  * SITE command: implements some specific command like {@link XMD5} {@link XCRC} {@link XSHA1} as if
  * they were called directly
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public class SITE extends AbstractCommand {
 
@@ -51,7 +50,7 @@ public class SITE extends AbstractCommand {
         if (command == null) {
             // Now check what is the command as if we were in the NetworkHandler
             command = FtpCommandCode.getFromLine(getSession(),
-                    getArg());
+                                                 getArg());
             special = false;
         }
         // Default message
@@ -61,7 +60,7 @@ public class SITE extends AbstractCommand {
             // Now check if a transfer is on its way: illegal to have at same
             // time two commands
             if (getSession().getDataConn().getFtpTransferControl()
-                    .isFtpTransferExecuting()) {
+                            .isFtpTransferExecuting()) {
                 throw new Reply503Exception(
                         "Previous transfer command is not finished yet");
             }
@@ -78,7 +77,7 @@ public class SITE extends AbstractCommand {
         } else {
             command = new IncorrectCommand();
             command.setArgs(getSession(), getArg(), null,
-                    FtpCommandCode.IncorrectSequence);
+                            FtpCommandCode.IncorrectSequence);
             getSession().setNextCommand(command);
             getSession().getBusinessHandler().beforeRunCommand();
             command.exec();

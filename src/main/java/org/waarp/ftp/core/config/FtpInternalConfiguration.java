@@ -1,28 +1,20 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package org.waarp.ftp.core.config;
-
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
@@ -36,7 +28,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 import io.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
 import io.netty.util.concurrent.EventExecutorGroup;
-
 import org.waarp.common.command.exception.Reply425Exception;
 import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.common.logging.WaarpLogger;
@@ -54,121 +45,119 @@ import org.waarp.ftp.core.session.FtpSessionReference;
 import org.waarp.ftp.core.utils.FtpChannelUtils;
 import org.waarp.ftp.core.utils.FtpShutdownHook;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 /**
  * Internal configuration of the FTP server, related to Netty
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public class FtpInternalConfiguration {
     // Static values
-    /**
-     * Internal Logger
-     */
-    private static final WaarpLogger logger = WaarpLoggerFactory.getLogger(FtpInternalConfiguration.class);
-
-    // Network Internals
     /**
      * Time elapse for retry in ms
      */
     public static final long RETRYINMS = 10;
 
+    // Network Internals
     /**
      * Number of retry before error
      */
     public static final int RETRYNB = 3;
-
     /**
      * Time elapse for WRITE OR CLOSE WAIT elaps in ms
      */
     public static final long WAITFORNETOP = 1000;
     /**
+     * Default size for buffers (NIO)
+     */
+    public static final int BUFFERSIZEDEFAULT = 0x10000; // 64K
+    /**
+     * Internal Logger
+     */
+    private static final WaarpLogger logger = WaarpLoggerFactory.getLogger(FtpInternalConfiguration.class);
+    /**
      * Hack to say Windows or Unix (USR1 not OK on Windows)
      */
     static Boolean ISUNIX = null;
 
-    /**
-     * Default size for buffers (NIO)
-     */
-    public static final int BUFFERSIZEDEFAULT = 0x10000; // 64K
-
     // Dynamic values
-    /**
-     * List of all Command Channels to enable the close call on them using Netty ChannelGroup
-     */
-    private ChannelGroup commandChannelGroup = null;
-
     /**
      * ExecutorService Boss
      */
     private final EventLoopGroup execBoss;
-
     /**
      * ExecutorService Worker
      */
     private final EventLoopGroup execWorker;
-
-    /**
-     * Bootstrap for Command server
-     */
-    private ServerBootstrap serverBootstrap = null;
-
-    /**
-     * List of all Data Channels to enable the close call on them using Netty ChannelGroup
-     */
-    private ChannelGroup dataChannelGroup = null;
-
     /**
      * ExecutorService Data Passive Boss
      */
     private final EventLoopGroup execPassiveDataBoss;
-
     /**
      * ExecutorService Command Event Loop
      */
     private final EventLoopGroup execCommandEvent;
-
     /**
      * ExecutorService Data Event Loop
      */
     private final EventLoopGroup execDataEvent;
-
     /**
      * ExecutorService Data Active Worker
      */
     private final EventLoopGroup execDataWorker;
-
     /**
      * FtpSession references used by Data Connection process
      */
     private final FtpSessionReference ftpSessionReference = new FtpSessionReference();
-
+    /**
+     * List of already bind local addresses for Passive connections
+     */
+    private final ConcurrentHashMap<InetSocketAddress, BindAddress> hashBindPassiveDataConn =
+            new ConcurrentHashMap<InetSocketAddress, BindAddress>();
+    /**
+     * Global Configuration
+     */
+    private final FtpConfiguration configuration;
+    /**
+     * List of all Command Channels to enable the close call on them using Netty ChannelGroup
+     */
+    private ChannelGroup commandChannelGroup = null;
+    /**
+     * Bootstrap for Command server
+     */
+    private ServerBootstrap serverBootstrap = null;
+    /**
+     * List of all Data Channels to enable the close call on them using Netty ChannelGroup
+     */
+    private ChannelGroup dataChannelGroup = null;
     /**
      * Bootstrap for Active connections
      */
     private Bootstrap activeBootstrap = null;
-
     /**
      * ServerBootStrap for Passive connections
      */
     private ServerBootstrap passiveBootstrap = null;
-
     /**
      * Scheduler for TrafficCounter
      */
     private ScheduledExecutorService executorService =
             Executors.newScheduledThreadPool(2, new WaarpThreadFactory("TimerTrafficFtp"));
-
     /**
      * Global TrafficCounter (set from global configuration)
      */
     private FtpGlobalTrafficShapingHandler globalTrafficShapingHandler = null;
-
     /**
      * Does the FTP will be SSL native based (990 989 port)
      */
     private boolean usingNativeSsl = false;
-
     /**
      * Does the FTP accept AUTH and PROT
      */
@@ -177,53 +166,14 @@ public class FtpInternalConfiguration {
      * Bootstrap for Active Ssl connections
      */
     private Bootstrap activeSslBootstrap = null;
-
     /**
      * ServerBootStrap for Passive Ssl connections
      */
     private ServerBootstrap passiveSslBootstrap = null;
 
     /**
-     * 
-     * @author Frederic Bregier org.waarp.ftp.core.config BindAddress
-     * 
-     */
-    public static class BindAddress {
-        /**
-         * Parent passive channel
-         */
-        public final Channel parent;
-
-        /**
-         * Number of binded Data connections
-         */
-        volatile public int nbBind = 0;
-
-        /**
-         * Constructor
-         * 
-         * @param channel
-         */
-        public BindAddress(Channel channel) {
-            parent = channel;
-            nbBind = 0;
-        }
-    }
-
-    /**
-     * List of already bind local addresses for Passive connections
-     */
-    private final ConcurrentHashMap<InetSocketAddress, BindAddress> hashBindPassiveDataConn =
-            new ConcurrentHashMap<InetSocketAddress, BindAddress>();
-
-    /**
-     * Global Configuration
-     */
-    private final FtpConfiguration configuration;
-
-    /**
      * Constructor
-     * 
+     *
      * @param configuration
      */
     public FtpInternalConfiguration(FtpConfiguration configuration) {
@@ -233,22 +183,24 @@ public class FtpInternalConfiguration {
         new FtpShutdownHook(configuration.getShutdownConfiguration(), configuration);
         execCommandEvent = new NioEventLoopGroup(configuration.getCLIENT_THREAD(), new WaarpThreadFactory("Command"));
         execDataEvent = new NioEventLoopGroup(configuration.getCLIENT_THREAD(), new WaarpThreadFactory("Data"));
-        execBoss = new NioEventLoopGroup(configuration.getSERVER_THREAD(), new WaarpThreadFactory("CommandBoss", false));
+        execBoss =
+                new NioEventLoopGroup(configuration.getSERVER_THREAD(), new WaarpThreadFactory("CommandBoss", false));
         execWorker = new NioEventLoopGroup(configuration.getCLIENT_THREAD(), new WaarpThreadFactory("CommandWorker"));
         execPassiveDataBoss = new NioEventLoopGroup(configuration.getSERVER_THREAD() * 2, new WaarpThreadFactory(
                 "PassiveDataBoss"));
-        execDataWorker = new NioEventLoopGroup(configuration.getCLIENT_THREAD() * 2, new WaarpThreadFactory("DataWorker"));
+        execDataWorker =
+                new NioEventLoopGroup(configuration.getCLIENT_THREAD() * 2, new WaarpThreadFactory("DataWorker"));
     }
 
     /**
      * Startup the server
-     * 
+     *
      * @throws FtpNoConnectionException
-     * 
+     *
      */
     public void serverStartup() throws FtpNoConnectionException {
         WaarpLoggerFactory.setDefaultFactory(WaarpLoggerFactory
-                .getDefaultFactory());
+                                                     .getDefaultFactory());
         // Command
         commandChannelGroup = new DefaultChannelGroup(configuration.fromClass.getName(), execWorker.next());
         // Data
@@ -257,7 +209,7 @@ public class FtpInternalConfiguration {
         // Passive Data Connections
         passiveBootstrap = new ServerBootstrap();
         WaarpNettyUtil.setServerBootstrap(passiveBootstrap, execPassiveDataBoss, execDataWorker,
-                (int) configuration.getTIMEOUTCON());
+                                          (int) configuration.getTIMEOUTCON());
         if (usingNativeSsl) {
             passiveBootstrap.childHandler(new FtpsDataInitializer(
                     configuration.dataBusinessHandler, configuration, false));
@@ -268,7 +220,7 @@ public class FtpInternalConfiguration {
         if (acceptAuthProt) {
             passiveSslBootstrap = new ServerBootstrap();
             WaarpNettyUtil.setServerBootstrap(passiveSslBootstrap, execPassiveDataBoss, execDataWorker,
-                    (int) configuration.getTIMEOUTCON());
+                                              (int) configuration.getTIMEOUTCON());
             passiveSslBootstrap.childHandler(new FtpsDataInitializer(
                     configuration.dataBusinessHandler, configuration, false));
         } else {
@@ -308,7 +260,7 @@ public class FtpInternalConfiguration {
         try {
             FtpChannelUtils.addCommandChannel(serverBootstrap.bind(
                     new InetSocketAddress(configuration.getServerPort())).sync().channel(),
-                    configuration);
+                                              configuration);
         } catch (InterruptedException e) {
             throw new FtpNoConnectionException("Can't initiate the FTP server", e);
         }
@@ -318,15 +270,15 @@ public class FtpInternalConfiguration {
         FtpShutdownHook.addShutdownHook();
         // Factory for TrafficShapingHandler
         globalTrafficShapingHandler = new FtpGlobalTrafficShapingHandler(executorService,
-                configuration.getServerGlobalWriteLimit(),
-                configuration.getServerGlobalReadLimit(),
-                configuration.getServerChannelWriteLimit(),
-                configuration.getServerChannelReadLimit(),
-                configuration.getDelayLimit());
+                                                                         configuration.getServerGlobalWriteLimit(),
+                                                                         configuration.getServerGlobalReadLimit(),
+                                                                         configuration.getServerChannelWriteLimit(),
+                                                                         configuration.getServerChannelReadLimit(),
+                                                                         configuration.getDelayLimit());
     }
 
     /**
-     * 
+     *
      * @return an ExecutorService
      */
     public ExecutorService getWorker() {
@@ -335,19 +287,19 @@ public class FtpInternalConfiguration {
 
     /**
      * Add a session from a couple of addresses
-     * 
+     *
      * @param ipOnly
      * @param fullIp
      * @param session
      */
     public void setNewFtpSession(InetAddress ipOnly, InetSocketAddress fullIp,
-            FtpSession session) {
+                                 FtpSession session) {
         ftpSessionReference.setNewFtpSession(ipOnly, fullIp, session);
     }
 
     /**
      * Return and remove the FtpSession
-     * 
+     *
      * @param channel
      * @param active
      * @return the FtpSession if it exists associated to this channel
@@ -362,7 +314,7 @@ public class FtpInternalConfiguration {
 
     /**
      * Remove the FtpSession
-     * 
+     *
      * @param ipOnly
      * @param fullIp
      */
@@ -372,7 +324,7 @@ public class FtpInternalConfiguration {
 
     /**
      * Test if the couple of addresses is already in the context
-     * 
+     *
      * @param ipOnly
      * @param fullIp
      * @return True if the couple is present
@@ -382,7 +334,7 @@ public class FtpInternalConfiguration {
     }
 
     /**
-     * 
+     *
      * @return the number of Active Sessions
      */
     public int getNumberSessions() {
@@ -391,7 +343,7 @@ public class FtpInternalConfiguration {
 
     /**
      * Try to add a Passive Channel listening to the specified local address
-     * 
+     *
      * @param address
      * @param ssl
      * @throws Reply425Exception
@@ -444,7 +396,7 @@ public class FtpInternalConfiguration {
      * Try to unbind (closing the parent channel) the Passive Channel listening to the specified
      * local address if the last one. It returns only when the underlying parent channel is closed
      * if this was the last session that wants to open on this local address.
-     * 
+     *
      * @param address
      */
     public void unbindPassive(InetSocketAddress address) {
@@ -467,7 +419,7 @@ public class FtpInternalConfiguration {
     }
 
     /**
-     * 
+     *
      * @return the number of Binded Passive Connections
      */
     public int getNbBindedPassive() {
@@ -476,7 +428,7 @@ public class FtpInternalConfiguration {
 
     /**
      * Return the associated Executor for Command Event
-     * 
+     *
      * @return the Command Event Executor
      */
     public EventExecutorGroup getExecutor() {
@@ -485,7 +437,7 @@ public class FtpInternalConfiguration {
 
     /**
      * Return the associated Executor for Data Event
-     * 
+     *
      * @return the Data Event Executor
      */
     public EventExecutorGroup getDataExecutor() {
@@ -519,7 +471,7 @@ public class FtpInternalConfiguration {
     }
 
     /**
-     * 
+     *
      * @return The TrafficCounterFactory
      */
     public FtpGlobalTrafficShapingHandler getGlobalTrafficShapingHandler() {
@@ -527,12 +479,12 @@ public class FtpInternalConfiguration {
     }
 
     /**
-     * 
+     *
      * @return a new ChannelTrafficShapingHandler
      */
     public ChannelTrafficShapingHandler newChannelTrafficShapingHandler() {
         if (configuration.getServerChannelWriteLimit() == 0 &&
-                configuration.getServerChannelReadLimit() == 0) {
+            configuration.getServerChannelReadLimit() == 0) {
             return null;
         }
         if (globalTrafficShapingHandler instanceof GlobalChannelTrafficShapingHandler) {
@@ -561,6 +513,14 @@ public class FtpInternalConfiguration {
     }
 
     /**
+     * @param acceptAuthProt
+     *            the acceptAuthProt to set
+     */
+    public void setAcceptAuthProt(boolean acceptAuthProt) {
+        this.acceptAuthProt = acceptAuthProt;
+    }
+
+    /**
      * @return the usingNativeSsl
      */
     public boolean isUsingNativeSsl() {
@@ -576,11 +536,30 @@ public class FtpInternalConfiguration {
     }
 
     /**
-     * @param acceptAuthProt
-     *            the acceptAuthProt to set
+     *
+     * @author Frederic Bregier org.waarp.ftp.core.config BindAddress
+     *
      */
-    public void setAcceptAuthProt(boolean acceptAuthProt) {
-        this.acceptAuthProt = acceptAuthProt;
+    public static class BindAddress {
+        /**
+         * Parent passive channel
+         */
+        public final Channel parent;
+
+        /**
+         * Number of binded Data connections
+         */
+        volatile public int nbBind = 0;
+
+        /**
+         * Constructor
+         *
+         * @param channel
+         */
+        public BindAddress(Channel channel) {
+            parent = channel;
+            nbBind = 0;
+        }
     }
 
 }

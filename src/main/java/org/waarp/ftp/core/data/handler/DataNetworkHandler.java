@@ -1,28 +1,20 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package org.waarp.ftp.core.data.handler;
-
-import java.io.IOException;
-import java.net.BindException;
-import java.net.ConnectException;
-import java.nio.channels.CancelledKeyException;
-import java.nio.channels.ClosedChannelException;
-import java.nio.channels.NotYetConnectedException;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -32,7 +24,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.SimpleChannelInboundHandler;
-
 import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.common.exception.FileTransferException;
 import org.waarp.common.exception.InvalidArgumentException;
@@ -51,11 +42,18 @@ import org.waarp.ftp.core.exception.FtpNoTransferException;
 import org.waarp.ftp.core.session.FtpSession;
 import org.waarp.ftp.core.utils.FtpChannelUtils;
 
+import java.io.IOException;
+import java.net.BindException;
+import java.net.ConnectException;
+import java.nio.channels.CancelledKeyException;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.NotYetConnectedException;
+
 /**
  * Network handler for Data connections
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
     /**
@@ -63,27 +61,22 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
      */
     private static final WaarpLogger logger = WaarpLoggerFactory
             .getLogger(DataNetworkHandler.class);
-
-    /**
-     * Business Data Handler
-     */
-    private DataBusinessHandler dataBusinessHandler = null;
-
     /**
      * Configuration
      */
     protected final FtpConfiguration configuration;
-
     /**
      * Is this Data Connection an Active or Passive one
      */
     private final boolean isActive;
-
     /**
      * Internal store for the SessionInterface
      */
     protected FtpSession session = null;
-
+    /**
+     * Business Data Handler
+     */
+    private DataBusinessHandler dataBusinessHandler = null;
     /**
      * The associated Channel
      */
@@ -98,16 +91,16 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
      * The associated FtpTransfer
      */
     private volatile FtpTransfer ftpTransfer = null;
-    
+
     /**
      * Constructor from DataBusinessHandler
-     * 
+     *
      * @param configuration
      * @param handler
      * @param active
      */
     public DataNetworkHandler(FtpConfiguration configuration,
-            DataBusinessHandler handler, boolean active) {
+                              DataBusinessHandler handler, boolean active) {
         super();
         this.configuration = configuration;
         dataBusinessHandler = handler;
@@ -135,7 +128,7 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
     }
 
     /**
-     * 
+     *
      * @return the NetworkHandler associated with the control connection
      */
     public NetworkHandler getNetworkHandler() {
@@ -144,12 +137,12 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 
     /**
      * Run firstly executeChannelClosed.
-     * 
+     *
      * @throws Exception
      */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        logger.debug("Data Channel closed with a session ? "+(session !=null));
+        logger.debug("Data Channel closed with a session ? " + (session != null));
         if (session != null) {
             if (session.getDataConn().checkCorrectChannel(ctx.channel())) {
                 session.getDataConn().getFtpTransferControl().setPreEndOfTransfer();
@@ -197,7 +190,7 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 
     /**
      * Initialize the Handler.
-     * 
+     *
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -206,7 +199,7 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
         if (session == null) {
             setSession(channel);
         }
-        logger.debug("Data Channel opened as "+channel);
+        logger.debug("Data Channel opened as " + channel);
         if (session == null) {
             logger.debug("DataChannel immediately closed since no session is assigned");
             WaarpSslUtility.closingSslChannel(ctx.channel());
@@ -220,17 +213,17 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
         if (session.getReplyCode().getCode() >= 400) {
             // shall not be except if an error early occurs
             switch (session.getCurrentCommand().getCode()) {
-                case RETR:
-                case APPE:
-                case STOR:
-                case STOU:
-                    // close the data channel immediately
-                    logger.debug("DataChannel immediately closed since " + session.getCurrentCommand().getCode()
-                            + " is not ok at startup");
-                    WaarpSslUtility.closingSslChannel(ctx.channel());
-                    return;
-                default:
-                    break;
+            case RETR:
+            case APPE:
+            case STOR:
+            case STOU:
+                // close the data channel immediately
+                logger.debug("DataChannel immediately closed since " + session.getCurrentCommand().getCode()
+                             + " is not ok at startup");
+                WaarpSslUtility.closingSslChannel(ctx.channel());
+                return;
+            default:
+                break;
             }
         }
         if (isStillAlive()) {
@@ -269,7 +262,7 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 
     /**
      * Unlock the Mode Codec from openConnection of {@link FtpTransferControl}
-     * 
+     *
      */
     public void unlockModeCodec() {
         FtpDataModeCodec modeCodec = (FtpDataModeCodec) channelPipeline
@@ -279,7 +272,7 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 
     /**
      * Default exception task: close the current connection after calling exceptionLocalCaught.
-     * 
+     *
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
@@ -309,7 +302,7 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
                     if (session.getDataConn() != null) {
                         if (session.getDataConn().checkCorrectChannel(ctx.channel())) {
                             session.getDataConn().getFtpTransferControl()
-                                    .setTransferAbortedFromInternal(true);
+                                   .setTransferAbortedFromInternal(true);
                         }
                     }
                 }
@@ -343,16 +336,17 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
         }
         if (session.getDataConn().checkCorrectChannel(ctx.channel())) {
             session.getDataConn().getFtpTransferControl()
-                    .setTransferAbortedFromInternal(true);
+                   .setTransferAbortedFromInternal(true);
         }
     }
 
     public void setFtpTransfer(FtpTransfer ftpTransfer) {
         this.ftpTransfer = ftpTransfer;
     }
+
     /**
      * Act as needed according to the receive DataBlock message
-     * 
+     *
      */
     @Override
     public void channelRead0(ChannelHandlerContext ctx, DataBlock dataBlock) {
@@ -362,12 +356,12 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
             } catch (FtpNoTransferException e) {
                 logger.debug(e);
                 session.getDataConn().getFtpTransferControl()
-                        .setTransferAbortedFromInternal(true);
+                       .setTransferAbortedFromInternal(true);
             }
             if (ftpTransfer == null) {
                 logger.debug("No ExecutionFtpTransfer found");
                 session.getDataConn().getFtpTransferControl()
-                    .setTransferAbortedFromInternal(true);
+                       .setTransferAbortedFromInternal(true);
                 return;
             }
         }
@@ -378,17 +372,17 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
                 } catch (FtpNoFileException e1) {
                     logger.debug(e1);
                     session.getDataConn().getFtpTransferControl()
-                            .setTransferAbortedFromInternal(true);
+                           .setTransferAbortedFromInternal(true);
                     return;
                 } catch (FileTransferException e1) {
                     logger.debug(e1);
                     session.getDataConn().getFtpTransferControl()
-                            .setTransferAbortedFromInternal(true);
+                           .setTransferAbortedFromInternal(true);
                 }
             } else {
                 // Shutdown
                 session.getDataConn().getFtpTransferControl()
-                        .setTransferAbortedFromInternal(true);
+                       .setTransferAbortedFromInternal(true);
                 WaarpSslUtility.closingSslChannel(ctx.channel());
             }
         } finally {
@@ -398,7 +392,7 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 
     /**
      * Write a simple message (like LIST) and wait for it
-     * 
+     *
      * @param message
      * @return True if the message is correctly written
      */
@@ -422,7 +416,7 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 
     /**
      * If the service is going to shutdown, it sends back a 421 message to the connection
-     * 
+     *
      * @return True if the service is alive, else False if the system is going down
      */
     private boolean isStillAlive() {

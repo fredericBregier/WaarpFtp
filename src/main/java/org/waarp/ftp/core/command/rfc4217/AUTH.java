@@ -1,17 +1,16 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -35,10 +34,10 @@ import org.waarp.ftp.core.command.AbstractCommand;
  * 502, 504, 534*, 431* 500, 501, 421<br>
  * <br>
  * AUTH TLS -> 234 -> USER or ([PBSZ 0] PROT P then USER) -> 2xy
- * 
- * 
+ *
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public class AUTH extends AbstractCommand {
     /**
@@ -68,14 +67,14 @@ public class AUTH extends AbstractCommand {
             getSession().rein();
             getSession().setNextCommand(this);
             getSession().setReplyCode(ReplyCode.REPLY_234_SECURITY_DATA_EXCHANGE_COMPLETE,
-                    null);
+                                      null);
         } else if (types[0].equalsIgnoreCase("SSL")) {
             // Both Command and Data will have SSL
             logger.debug("Start SSL");
             getSession().rein();
             getSession().setNextCommand(this);
             getSession().setReplyCode(ReplyCode.REPLY_234_SECURITY_DATA_EXCHANGE_COMPLETE,
-                    null);
+                                      null);
             getSession().setDataSsl(true);
         } else {
             throw new Reply504Exception("Unknown Parameter: " + types[0]);
