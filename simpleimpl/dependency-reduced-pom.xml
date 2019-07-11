@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <artifactId>WaarpFtp</artifactId>
+    <groupId>Waarp</groupId>
+    <version>3.0.8</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>WaarpFtp-Simpleimpl</artifactId>
+  <name>WaarpFtp-SimpleServer</name>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${maven-shade-plugin}</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <minimizeJar>true</minimizeJar>
+              <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+              <createDependencyReducedPom>true</createDependencyReducedPom>
+              <transformers>
+                <transformer />
+                <transformer>
+                  <addHeader>false</addHeader>
+                </transformer>
+                <transformer />
+                <transformer />
+                <transformer>
+                  <mainClass>org.waarp.ftp.simpleimpl.SimpleGatewayFtpServer</mainClass>
+                </transformer>
+              </transformers>
+              <artifactSet>
+                <excludes>
+                  <exclude>classworlds:classworlds</exclude>
+                  <exclude>junit:junit</exclude>
+                  <exclude>jmock:*</exclude>
+                  <exclude>org.apache.maven:lib:tests</exclude>
+                </excludes>
+              </artifactSet>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <properties>
+    <filterexclude>zzz</filterexclude>
+    <filtermodule>ftp/simpleimpl</filtermodule>
+    <main.basedir>${project.parent.basedir}</main.basedir>
+  </properties>
+</project>
