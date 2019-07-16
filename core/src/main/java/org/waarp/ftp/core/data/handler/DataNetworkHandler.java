@@ -372,13 +372,22 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
   @Override
   public void channelRead0(ChannelHandlerContext ctx, DataBlock dataBlock) {
     if (ftpTransfer == null) {
-      try {
-        ftpTransfer = session.getDataConn().getFtpTransferControl()
-                             .getExecutingFtpTransfer();
-      } catch (FtpNoTransferException e) {
-        logger.debug(e);
-        session.getDataConn().getFtpTransferControl()
-               .setTransferAbortedFromInternal(true);
+      for (int i = 0; i < 10; i++) {
+        try {
+          ftpTransfer = session.getDataConn().getFtpTransferControl()
+                               .getExecutingFtpTransfer();
+          if (ftpTransfer != null) {
+            break;
+          }
+        } catch (FtpNoTransferException e) {
+          logger.debug(e);
+          try {
+            Thread.sleep(100);
+          } catch (InterruptedException e1) {
+            break;
+          }
+          continue;
+        }
       }
       if (ftpTransfer == null) {
         logger.debug("No ExecutionFtpTransfer found");
@@ -429,7 +438,7 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
     logger.debug("Will write: " + buffer.toString(WaarpStringUtils.UTF8));
     try {
       future = dataChannel.writeAndFlush(dataBlock);
-      future.await(FtpConfiguration.getDATATIMEOUTCON());
+      future.await();
     } catch (InterruptedException e) {
       logger.debug("Interrupted", e);
       return false;

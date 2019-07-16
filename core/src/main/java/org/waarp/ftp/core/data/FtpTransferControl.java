@@ -32,7 +32,6 @@ import org.waarp.common.logging.WaarpLogger;
 import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.ftp.core.command.service.ABOR;
-import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.config.FtpInternalConfiguration;
 import org.waarp.ftp.core.control.NetworkHandler;
 import org.waarp.ftp.core.data.handler.DataNetworkHandler;
@@ -47,7 +46,6 @@ import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Main class that handles transfers and their execution
@@ -324,8 +322,7 @@ public class FtpTransferControl {
   public Channel waitForOpenedDataChannel() throws InterruptedException {
     Channel channel = null;
     if (waitForOpenedDataChannel.await(
-        session.getConfiguration().getTIMEOUTCON() + 1000,
-        TimeUnit.MILLISECONDS)) {
+        session.getConfiguration().getTIMEOUTCON() + 1000)) {
       if (waitForOpenedDataChannel.isSuccess()) {
         channel = waitForOpenedDataChannel.channel();
       } else {
@@ -398,8 +395,7 @@ public class FtpTransferControl {
     if (isDataNetworkHandlerReady && dataChannel != null) {
       try {
         WaarpSslUtility.closingSslChannel(dataChannel)
-                       .await(FtpConfiguration.getDATATIMEOUTCON(),
-                              TimeUnit.MILLISECONDS);
+                       .await();
       } catch (InterruptedException e) {
       }
       isDataNetworkHandlerReady = false;
@@ -472,45 +468,23 @@ public class FtpTransferControl {
              .setFtpTransfer(executingCommand);
     } catch (FtpNoConnectionException e1) {
     }
+    try {
+      waitForOpenedDataChannel.await();
+    } catch (InterruptedException e) {
+      commandFinishing.cancel();
+      endOfCommand.cancel();
+      return;
+    }
     waitForOpenedDataChannel.channel().config().setAutoRead(true);
-        /*
-        final WaarpFuture toFinish = commandFinishing;
-        final WaarpFuture toCommand = endOfCommand;
-         try {
-            session.getDataConn().getCurrentDataChannel().closeFuture()
-                    .addListener(new GenericFutureListener<Future<? super Void>>() {
-                        public void operationComplete(Future<? super Void> future) throws Exception {
-                            if (!toFinish.isDone() || !toCommand.isDone()) {
-                                logger.debug("Schedule to finish command: " + session + ":" + toFinish.isDone() + ":"
-                                        + toCommand.isDone());
-                                scheduleService.schedule(new Runnable() {
-                                    public void run() {
-                                        if (!toFinish.isDone() || !toCommand.isDone()) {
-                                            logger.warn("Will try to finish command: " + session + " CommandFinishing:"
-                                                    + toFinish.isDone() + " EndOfCommand:" + toCommand.isDone());
-                                            setTransferAbortedFromInternal(true);
-                                            //toFinish.cancel();
-                                        }
-                                    }
-                                }, FtpConfiguration.DATATIMEOUTCON * 2, TimeUnit.MILLISECONDS);
-                            }
-                        }
-                    });
-        } catch (FtpNoConnectionException e1) {
-            //e1.printStackTrace();
-        }*/
     // Run the command
     if (executorService == null) {
       executorService = Executors.newSingleThreadExecutor();
     }
     executorService.execute(new FtpTransferExecutor(session,
                                                     executingCommand));
-    try {
-      commandFinishing.await();
-      if (commandFinishing.isFailed()) {
-        endOfCommand.cancel();
-      }
-    } catch (InterruptedException e) {
+    commandFinishing.awaitForDoneOrInterruptible();
+    if (commandFinishing.isFailed()) {
+      endOfCommand.cancel();
     }
   }
 
@@ -546,13 +520,24 @@ public class FtpTransferControl {
   public boolean waitFtpTransferExecuting() {
     boolean notFinished = true;
     for (int i = 0; i < FtpInternalConfiguration.RETRYNB * 100; i++) {
-      if (isExecutingCommandFinished
-          || commandFinishing == null
-          || session.isCurrentCommandFinished()
-          ||
-          (commandFinishing != null && commandFinishing
-              .awaitUninterruptibly(FtpInternalConfiguration.RETRYINMS))) {
-        notFinished = false;
+      try {
+        if (isExecutingCommandFinished
+            || commandFinishing == null
+            || session.isCurrentCommandFinished()
+            ||
+            (commandFinishing != null && commandFinishing
+                .await(FtpInternalConfiguration.RETRYINMS))) {
+          notFinished = false;
+          break;
+        }
+      } catch (InterruptedException e) {
+        if (isExecutingCommandFinished
+            || commandFinishing == null
+            || session.isCurrentCommandFinished()
+            ||
+            (commandFinishing != null && commandFinishing.isDone())) {
+          notFinished = false;
+        }
         break;
       }
     }

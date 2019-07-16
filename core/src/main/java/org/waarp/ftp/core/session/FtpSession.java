@@ -302,7 +302,8 @@ public class FtpSession implements SessionInterface {
    * @return True if the Control is ready to accept command
    */
   public boolean isReady() {
-    return isReady.awaitUninterruptibly().isSuccess();
+    isReady.awaitForDoneOrInterruptible();
+    return isReady.isSuccess();
   }
 
   /**

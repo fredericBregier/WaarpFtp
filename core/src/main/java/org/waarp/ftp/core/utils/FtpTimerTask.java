@@ -21,6 +21,7 @@ package org.waarp.ftp.core.utils;
 
 import org.waarp.common.logging.WaarpLogger;
 import org.waarp.common.logging.WaarpLoggerFactory;
+import org.waarp.common.utility.DetectionUtils;
 import org.waarp.ftp.core.config.FtpConfiguration;
 
 import java.util.TimerTask;
@@ -69,7 +70,7 @@ public class FtpTimerTask extends TimerTask {
     switch (type) {
     case TIMER_EXIT:
       logger.error("System will force EXIT");
-      System.exit(0);
+      DetectionUtils.SystemExit(0);
       break;
     case TIMER_CONTROL:
       logger.info("Exit Shutdown Command");
